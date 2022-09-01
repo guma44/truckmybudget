@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { withRouter, Switch, Route } from 'react-router-dom';
-import { ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import Header from './components/Header';
 import NotFound from './pages/NotFound';
@@ -10,6 +10,19 @@ import HomeContainer from './pages/Home';
 import * as Paths from './paths';
 
 import { loadApp } from './entities/app';
+
+const theme = createTheme({
+  palette: {
+    type: 'dark',
+    primary: {
+      main: '#3f51b5',
+      light: '#c36591',
+    },
+    secondary: {
+      main: '#f50057',
+    },
+  },
+});
 
 
 const App = () => {
@@ -27,7 +40,7 @@ const App = () => {
   }, []);
 
   return (
-      <ThemeProvider>
+      <ThemeProvider theme={theme}>
         <>
           <Header />
           <Switch>

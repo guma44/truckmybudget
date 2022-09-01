@@ -1,8 +1,8 @@
 {
-  "search": {
+  "expenses": {
     "production": "",
     "test": "",
     "development": "",
-    "local": ""
+    "local": "http://localhost:8000/"
   }
 }

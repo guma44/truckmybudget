@@ -12,7 +12,6 @@ import { useState } from 'react';
 import { applicationUserSelector } from '../../entities/app/selectors';
 import { useSelector } from 'react-redux';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
-import MenuIcon from '@mui/icons-material/Menu';
 import DrawerComponent from "../Drawer"
 
 

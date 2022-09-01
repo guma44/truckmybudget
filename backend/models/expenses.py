@@ -3,7 +3,7 @@ import datetime
 from pydantic import BaseModel
 from beanie import Document, Link
 
-from models.categories import Category
+from models.groups import Group
 from models.tags import Tag
 
 
@@ -14,7 +14,7 @@ class Expense(Document):
     invoice: Optional[str]
     description: Optional[str]
     tags: List[Link[Tag]] = []
-    category: Optional[Link[Category]]
+    group: Optional[Link[Group]]
 
     class Settings:
         name = "expenses"
@@ -32,7 +32,7 @@ class Expense(Document):
                 "price": 35.4,
                 "date": "2022-02-04",
                 "tags": ["TAG_ID"],
-                "category": "CAT_ID"
+                "group": "GROUP_ID"
             }
         }
 
@@ -44,4 +44,4 @@ class UpdateExpense(BaseModel):
     invoice: Optional[str] = None
     description: Optional[str]
     tags: Optional[List[Link[Tag]]]
-    category: Optional[Link[Category]]
+    group: Optional[Link[Group]]

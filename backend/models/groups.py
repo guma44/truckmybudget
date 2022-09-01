@@ -1,13 +1,11 @@
 from beanie import Document
 from pydantic.color import Color
 
-
-class Tag(Document):
+class Group(Document):
     name: str
     color: Color
 
     class Settings:
-        name = "tags"
-
+        name = "groups"
     class Config:
-        schema_extra = {"example": {"name": "test_tag", "color": "red"}}
+        schema_extra = {"example": {"name": "test_group", "color": "red"}}

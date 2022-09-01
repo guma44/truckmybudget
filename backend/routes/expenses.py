@@ -4,11 +4,8 @@ from typing import List, Optional
 import datetime
 import uuid
 import os
-from beanie import WriteRules, Link
 
-from models.expenses import Expense, UpdateExpense
-from models.tags import Tag
-from models.categories import Category
+from models.expenses import Expense
 
 
 router = APIRouter()
@@ -34,7 +31,7 @@ async def add_expense(
     price: float = Form(...),
     date: datetime.date = Form(...),
     description: str = Form(None),
-    category: str = Form(None),
+    group: str = Form(None),
     tags: List[str] = Form(None),
     invoice: UploadFile = File(None),
 ) -> Expense:
@@ -44,7 +41,7 @@ async def add_expense(
         price=price,
         date=date,
         description=description,
-        category=category,
+        group=group,
         tags=[tag for tag in tags if tag is not None and tag],
         invoice=invoice_path,
     )
@@ -71,7 +68,7 @@ async def update_expense_data(
     price: float = Form(None),
     date: datetime.date = Form(None),
     description: str = Form(None),
-    category: str = Form(None),
+    group: str = Form(None),
     tags: List[str] = Form(None),
     invoice: UploadFile = File(None),
 ) -> Expense:
@@ -81,7 +78,7 @@ async def update_expense_data(
         "price": price,
         "date": date,
         "description": description,
-        "category": category,
+        "group": group,
         "tags": [tag for tag in tags if tag is not None and tag],
         "invoice": invoice_path,
     }

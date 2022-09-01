@@ -6,15 +6,13 @@ from fastapi.encoders import jsonable_encoder
 from typing import Optional, List
 import uuid
 
-from fastapi import Depends, FastAPI
-
 from beanie import init_beanie
 from fastapi import Depends, FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from db import main_db
 from routes.expenses import router as expenses_router
-from routes.categories import router as categories_router
+from routes.groups import router as groups_router
 from routes.tags import router as tags_router
 from models.users import (
     User,
@@ -26,7 +24,7 @@ from models.users import (
     fastapi_users,
 )
 from models.expenses import Expense
-from models.categories import Category
+from models.groups import Group
 from models.tags import Tag
 
 app = FastAPI()
@@ -36,7 +34,7 @@ app.include_router(
 )
 
 app.include_router(expenses_router, tags=["expenses"], prefix="/expenses")
-app.include_router(categories_router, tags=["categories"], prefix="/categories")
+app.include_router(groups_router, tags=["groups"], prefix="/groups")
 app.include_router(tags_router, tags=["tags"], prefix="/tags")
 app.include_router(
     fastapi_users.get_register_router(UserRead, UserCreate),
@@ -64,7 +62,7 @@ app.include_router(
 async def on_startup():
     await init_beanie(
         database=main_db,
-        document_models=[User, Expense, Category, Tag],
+        document_models=[User, Expense, Group, Tag],
     )
 
 
