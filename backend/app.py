@@ -9,6 +9,7 @@ import uuid
 from beanie import init_beanie
 from fastapi import Depends, FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from db import main_db
 from routes.expenses import router as expenses_router
@@ -28,6 +29,15 @@ from models.groups import Group
 from models.tags import Tag
 
 app = FastAPI()
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(
     fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]

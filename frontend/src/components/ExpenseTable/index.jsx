@@ -16,145 +16,12 @@ import { Button, Chip, IconButton, Tooltip } from '@material-ui/core';
 import DownloadIcon from '@mui/icons-material/Download';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-
-const rows = [
-  {
-    "_id": "6310a2c9f6c781cefd90e54b",
-    "name": "Projekt - rata pierwsza",
-    "price": 4000,
-    "date": "2022-05-05",
-    "invoice": null,
-    "description": null,
-    "tags": [
-      {
-        "_id": "6310a0e9d6817dc22b7541fd",
-        "name": "Projekt",
-        "color": "#6d37c4"
-      }
-    ],
-    "group": {
-      "_id": "6310a010d6817dc22b7541f4",
-      "name": "Projekt domu",
-      "color": "#6d37c4"
-    }
-  },
-  {
-    "_id": "6310a311f6c781cefd90e54c",
-    "name": "Projekt - rata druga",
-    "price": 5000,
-    "date": "2022-07-05",
-    "invoice": "static/invoices/0ce0b25e188c48f2af71bde4355988b3.pdf",
-    "description": null,
-    "tags": [
-      {
-        "_id": "6310a0e9d6817dc22b7541fd",
-        "name": "Projekt",
-        "color": "#6d37c4"
-      }
-    ],
-    "group": {
-      "_id": "6310a010d6817dc22b7541f4",
-      "name": "Projekt domu",
-      "color": "#6d37c4"
-    }
-  },
-  {
-    "_id": "6310a393f6c781cefd90e54d",
-    "name": "ToiToi - wrzesień",
-    "price": 400,
-    "date": "2022-09-01",
-    "invoice": null,
-    "description": null,
-    "tags": [
-      {
-        "_id": "6310a0bbd6817dc22b7541fa",
-        "name": "Przygotowanie",
-        "color": "#c76414"
-      }
-    ],
-    "group": {
-      "_id": "6310a01dd6817dc22b7541f6",
-      "name": "ToiToi",
-      "color": "#11a692"
-    }
-  },
-  {
-    "_id": "6310a3a0f6c781cefd90e54e",
-    "name": "ToiToi - październik",
-    "price": 400,
-    "date": "2022-10-01",
-    "invoice": null,
-    "description": null,
-    "tags": [
-      {
-        "_id": "6310a0bbd6817dc22b7541fa",
-        "name": "Przygotowanie",
-        "color": "#c76414"
-      }
-    ],
-    "group": {
-      "_id": "6310a01dd6817dc22b7541f6",
-      "name": "ToiToi",
-      "color": "#11a692"
-    }
-  },
-  {
-    "_id": "6310a3aaf6c781cefd90e54f",
-    "name": "ToiToi - listopad",
-    "price": 400,
-    "date": "2022-11-01",
-    "invoice": null,
-    "description": null,
-    "tags": [
-      {
-        "_id": "6310a0bbd6817dc22b7541fa",
-        "name": "Przygotowanie",
-        "color": "#c76414"
-      }
-    ],
-    "group": {
-      "_id": "6310a01dd6817dc22b7541f6",
-      "name": "ToiToi",
-      "color": "#11a692"
-    }
-  },
-  {
-    "_id": "6310a3b4f6c781cefd90e550",
-    "name": "ToiToi - grudzień",
-    "price": 400,
-    "date": "2022-11-01",
-    "invoice": null,
-    "description": null,
-    "tags": [
-      {
-        "_id": "6310a0bbd6817dc22b7541fa",
-        "name": "Przygotowanie",
-        "color": "#c76414"
-      }
-    ],
-    "group": {
-      "_id": "6310a01dd6817dc22b7541f6",
-      "name": "ToiToi",
-      "color": "#11a692"
-    }
-  },
-  {
-    "_id": "6310a487f6c781cefd90e551",
-    "name": "Ekipa - etap 1",
-    "price": 40000,
-    "date": "2022-10-02",
-    "invoice": null,
-    "description": "Po skończeniu piwnicy",
-    "tags": [
-      {
-        "_id": "6310a0add6817dc22b7541f8",
-        "name": "SSO",
-        "color": "#0211b3"
-      }
-    ],
-    "group": null
-  }
-];
+import DeleteIcon from '@mui/icons-material/Delete'
+import FormDialog from '../FormDialog';
+import { expensesSelector } from '../../entities/app/selectors';
+import { useSelector, useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { loadExpenseData } from '../../entities/app';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -172,7 +39,7 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// This method is created for cross-browser compatibility, if you don't
+// This method is created for cross-bexpenseser compatibility, if you don't
 // need to support IE11, you can use Array.prototype.sort() directly
 function stableSort(array, comparator) {
   const stabilizedThis = array.map((el, index) => [el, index]);
@@ -262,6 +129,7 @@ function ExpenseTableHead(props) {
             </TableSortLabel>
           </TableCell>
         ))}
+        <TableCell></TableCell>
       </TableRow>
     </TableHead>
   );
@@ -275,7 +143,7 @@ ExpenseTableHead.propTypes = {
 };
 
 const ExpenseTableToolbar = () => {
-
+  const [dialogOpen, setDialogOpen] = React.useState(false);
   return (
     <Toolbar
       sx={{
@@ -295,9 +163,13 @@ const ExpenseTableToolbar = () => {
 export default function ExpenseTable() {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
-  const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const expenses = useSelector(expensesSelector);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(loadExpenseData());
+  }, []);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -309,19 +181,6 @@ export default function ExpenseTable() {
     const selectedIndex = selected.indexOf(name);
     console.log("Row " + name + "clicked");
   };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -337,10 +196,10 @@ export default function ExpenseTable() {
               order={order}
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              rowCount={expenses.length}
             />
             <TableBody>
-              {rows.slice().sort(getComparator(order, orderBy))
+              {expenses.slice().sort(getComparator(order, orderBy))
                 .map((row, index) => {
 
                   return (
@@ -372,19 +231,13 @@ export default function ExpenseTable() {
                         )}
                       </TableCell>
 
-                      <TableCell><EditIcon></EditIcon></TableCell>
+                      <TableCell>
+                        <IconButton><EditIcon/></IconButton>
+                        <IconButton><DeleteIcon/></IconButton>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: 53 * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
             </TableBody>
           </Table>
         </TableContainer>

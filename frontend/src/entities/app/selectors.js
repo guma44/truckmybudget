@@ -14,3 +14,13 @@ export const applicationStatusSelector = createSelector(
   applicationStateSelector,
   ({ status }) => status
 );
+
+export const expensesStatusSelector = createSelector(
+  applicationStateSelector,
+  ({ expensesStatus }) => expensesStatus
+);
+
+export const expensesSelector = createSelector(
+  applicationStateSelector,
+  ({ expenses }) => expenses
+);
