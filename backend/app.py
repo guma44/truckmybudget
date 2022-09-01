@@ -68,12 +68,12 @@ async def on_startup():
     )
 
 
-@app.post("/upload_recepit", tags=["uploads"])
+@app.post("/upload_invoice", tags=["uploads"])
 def upload(file: UploadFile = File(...)):
     try:
         contents = file.file.read()
         filename = uuid.uuid4().hex + os.path.splitext(file.filename)[-1]
-        with open(os.path.join("static/receipts", filename), "wb") as f:
+        with open(os.path.join("static/invoices", filename), "wb") as f:
             f.write(contents)
     except Exception:
         raise HTTPException(
