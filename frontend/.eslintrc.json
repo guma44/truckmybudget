@@ -1,0 +1,45 @@
+{
+  "extends": [
+    "plugin:react/recommended",
+    "plugin:import/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:import/typescript",
+    "prettier"
+  ],
+  "overrides": [
+    {
+      "files": ["**/__tests__/**.js", "**/*.test.js", "**/src/setupTests.js"],
+      "env": { "jest": true }
+    }
+  ],
+  "globals": {
+    "document": false,
+    "window": false,
+    "fetch": false,
+    "requestAnimationFrame": false
+  },
+  "plugins": ["@typescript-eslint", "classes"],
+  "rules": {
+    "import/no-extraneous-dependencies": "off",
+    "react/prop-types": "off",
+    "react/destructuring-assignment": "warn",
+    "react/jsx-filename-extension": "warn",
+    "react/jsx-one-expression-per-line": "off",
+    "no-underscore-dangle": "off",
+    "@typescript-eslint/no-unused-vars": "off"
+  },
+  "settings": {
+    "node": {
+      "extensions": [".js", ".jsx", ".ts", ".tsx"]
+    },
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx", ".js", ".jsx"]
+    },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      }
+    }
+  },
+  "root": true
+}

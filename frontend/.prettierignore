@@ -1,0 +1,4 @@
+/__mocks__
+/build
+/coverage
+/node_modules
