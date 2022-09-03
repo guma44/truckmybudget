@@ -24,3 +24,18 @@ export const expensesSelector = createSelector(
   applicationStateSelector,
   ({ expenses }) => expenses
 );
+
+export const groupsSelector = createSelector(
+  applicationStateSelector,
+  ({ groups }) => groups
+);
+
+export const tagsSelector = createSelector(
+  applicationStateSelector,
+  ({ tags }) => tags
+);
+
+export const formDialogSelector = createSelector(
+  applicationStateSelector,
+  ({ isFormDialogOpen }) => isFormDialogOpen
+);

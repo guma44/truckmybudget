@@ -1,9 +1,11 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import Paper from '@mui/material/Paper';
-
-import { applicationUserSelector } from '../../entities/app/selectors';
+import { formDialogSelector } from '../../entities/app/selectors';
 import ExpanseTable from '../../components/ExpenseTable';
+import FormDialog from '../../components/FormDialog';
+
+
 
 const StyledPaper = styled(Paper)`
   width: 90%;
@@ -18,11 +20,12 @@ const StyledPaper = styled(Paper)`
 `;
 
 const HomeView = () => {
-    return (
-        <StyledPaper>
-            <ExpanseTable></ExpanseTable>
-        </StyledPaper>
-    );
+  return (
+      <StyledPaper>
+          <FormDialog></FormDialog>
+          <ExpanseTable></ExpanseTable>
+      </StyledPaper>
+  );
 };
 
 export default HomeView;

@@ -22,6 +22,7 @@ import { expensesSelector } from '../../entities/app/selectors';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { loadExpenseData } from '../../entities/app';
+import { formDialogOpened } from '../../entities/app';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -143,7 +144,13 @@ ExpenseTableHead.propTypes = {
 };
 
 const ExpenseTableToolbar = () => {
-  const [dialogOpen, setDialogOpen] = React.useState(false);
+
+  const dispatch = useDispatch();
+
+  const openDialogHandler = () => {
+    dispatch(formDialogOpened(true));
+  }
+
   return (
     <Toolbar
       sx={{
@@ -152,7 +159,7 @@ const ExpenseTableToolbar = () => {
       }}
     >
       <Tooltip title="Add Expense">
-        <Button color="primary" variant="contained">
+        <Button color="primary" variant="contained" onClick={openDialogHandler}>
           <AddIcon />
         </Button>
       </Tooltip>
