@@ -43,6 +43,26 @@ export default function FormDialog() {
     dispatch(formDialogOpened(false));
   };
 
+  const getTagDisplay = (option, index, getTagProps) => {
+    let tag = {}
+    if (option._id === undefined) {
+      console.log(option);
+      tag = {
+        name: option,
+        color: "blue",
+        _id: option
+      }
+    } else {
+      tag = {...option}
+    }
+    return (<Chip
+    key={tag._id}
+    label={tag.name}
+    size="small"
+    color="primary"
+    style={{backgroundColor: tag.color}} {...getTagProps({ index })} />)
+  }
+
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
@@ -87,7 +107,7 @@ export default function FormDialog() {
           <Autocomplete
             freeSolo
             options={groups || []}
-            getOptionLabel={option => option.name || "test"}
+            getOptionLabel={option => option.name || option}
             onChange={onTagsChange}
             renderInput={params => (
               <TextField
@@ -104,8 +124,11 @@ export default function FormDialog() {
             multiple
             freeSolo
             options={tags || []}
-            getOptionLabel={option => option.name || "test"}
+            getOptionLabel={option => option.name || option}
             onChange={onTagsChange}
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => getTagDisplay(option, index, getTagProps))
+            }
             renderInput={params => (
               <TextField
                 {...params}
