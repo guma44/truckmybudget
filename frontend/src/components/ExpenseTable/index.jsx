@@ -143,8 +143,8 @@ ExpenseTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired,
 };
 
-const ExpenseTableToolbar = () => {
-
+const ExpenseTableToolbar = (props) => {
+  const { selectedRow } = props;
   const dispatch = useDispatch();
 
   const openDialogHandler = () => {
@@ -155,12 +155,12 @@ const ExpenseTableToolbar = () => {
     <Toolbar
       sx={{
         pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 }
+        pr: { xs: 1, sm: 1 },
       }}
     >
       <Tooltip title="Add Expense">
         <Button color="primary" variant="contained" onClick={openDialogHandler}>
-          <AddIcon />
+          <AddIcon /> Add Expense
         </Button>
       </Tooltip>
     </Toolbar>
@@ -170,7 +170,9 @@ const ExpenseTableToolbar = () => {
 export default function ExpenseTable() {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
+  const [selected, setSelected] = React.useState("");
   const expenses = useSelector(expensesSelector);
+  
 
   const dispatch = useDispatch();
 
@@ -184,15 +186,24 @@ export default function ExpenseTable() {
     setOrderBy(property);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    console.log("Row " + name + "clicked");
+  const handleClick = (event, id) => {
+    console.log("Row " + id + " clicked");
+    setSelected(id);
   };
+
+  const handleDeleteExpense = (event, id) => {
+    console.log("Deleting " + id);
+  }
+
+  const isRowSelected = (id) => {
+    console.log(id === selected);
+    return id === selected;
+  }
 
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <ExpenseTableToolbar />
+        <ExpenseTableToolbar selectedRow={selected}/>
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -208,13 +219,16 @@ export default function ExpenseTable() {
             <TableBody>
               {expenses.slice().sort(getComparator(order, orderBy))
                 .map((row, index) => {
-
+                  const isItemSelected = isRowSelected(row._id);
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.name)}
+                      role="checkbox"
+                      aria-checked={isItemSelected}
+                      onClick={(event) => handleClick(event, row._id)}
                       tabIndex={-1}
                       key={row._id}
+                      selected={isItemSelected}
                     >
                       <TableCell style={{color:row.group ? row.group.color : "black", fontWeight: 700}} align="left">
                         {row.group ? row.group.name : "Default"}
@@ -240,7 +254,7 @@ export default function ExpenseTable() {
 
                       <TableCell>
                         <IconButton><EditIcon/></IconButton>
-                        <IconButton><DeleteIcon/></IconButton>
+                        <IconButton onClick={(event) => handleDeleteExpense(event, row._id)}><DeleteIcon/></IconButton>
                       </TableCell>
                     </TableRow>
                   );

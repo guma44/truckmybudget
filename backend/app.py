@@ -15,6 +15,7 @@ from db import main_db
 from routes.expenses import router as expenses_router
 from routes.groups import router as groups_router
 from routes.tags import router as tags_router
+from routes.invoices import router as invoices_router
 from models.users import (
     User,
     UserCreate,
@@ -27,6 +28,7 @@ from models.users import (
 from models.expenses import Expense
 from models.groups import Group
 from models.tags import Tag
+from models.invoices import Invoice
 
 app = FastAPI()
 origins = ["*"]
@@ -46,6 +48,7 @@ app.include_router(
 app.include_router(expenses_router, tags=["expenses"], prefix="/expenses")
 app.include_router(groups_router, tags=["groups"], prefix="/groups")
 app.include_router(tags_router, tags=["tags"], prefix="/tags")
+app.include_router(invoices_router, tags=["invoices"], prefix="/invoices")
 app.include_router(
     fastapi_users.get_register_router(UserRead, UserCreate),
     prefix="/auth",
@@ -72,22 +75,6 @@ app.include_router(
 async def on_startup():
     await init_beanie(
         database=main_db,
-        document_models=[User, Expense, Group, Tag],
+        document_models=[User, Expense, Group, Tag, Invoice],
     )
 
-
-@app.post("/upload_invoice", tags=["uploads"])
-def upload(file: UploadFile = File(...)):
-    try:
-        contents = file.file.read()
-        filename = uuid.uuid4().hex + os.path.splitext(file.filename)[-1]
-        with open(os.path.join("static/invoices", filename), "wb") as f:
-            f.write(contents)
-    except Exception:
-        raise HTTPException(
-            status_code=500, detail="There was an error uploading the file"
-        )
-    finally:
-        file.file.close()
-
-    return {"message": f"Successfully uploaded", "name": filename}

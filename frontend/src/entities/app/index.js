@@ -15,6 +15,8 @@ export const expensesDataSet = createAction('app/expensesDataSet');
 export const groupsDataSet = createAction('app/groupsDataSet');
 export const tagsDataSet = createAction('app/tagsDataSet');
 export const formDialogOpened = createAction('app/formDialogOpened');
+export const toggleSnackbar = createAction('app/toggleSnackbar');
+export const addExpenseStatusSet = createAction('app/addExpenseStatusSet');
 
 /**
  * define complex actions
@@ -39,7 +41,6 @@ export const loadExpenseData = () => (async (dispatch) => {
 
   try {
     const response = await axios.get("http://localhost:8000/expenses");
-    console.log(response);
     dispatch(expensesDataSet(response.data));
   }
   catch (error) {
@@ -50,10 +51,30 @@ export const loadExpenseData = () => (async (dispatch) => {
   return dispatch(expensesStatusSet("EXPENSES_DID_LOAD"));
 });
 
+export const addExpense = (data) => (async (dispatch) => {
+  dispatch(addExpenseStatusSet("EXPENSE_WILL_ADD"));
+  // try to upload file
+  try {
+    const data = {
+      name: data.name,
+      price: data.price,
+      date: data.date,
+      description: data.description,
+      tags: data.tags ? data.tags.map((item) => item._id) : [],
+      group: data.group ? data.group._id : ""
+    };
+    const response = await axios.post("http://localhost:8000/expenses", data);
+    console.log(response);
+  } catch (error) {
+    console.log(error);
+  }
+  loadExpenseData();
+  return dispatch(addExpenseStatusSet("APP_DID_ADDED"));
+});
+
 export const loadTagData = () => (async (dispatch) => {
   try {
     const response = await axios.get("http://localhost:8000/tags");
-    console.log(response);
     dispatch(tagsDataSet(response.data));
   }
   catch (error) {
@@ -65,7 +86,6 @@ export const loadTagData = () => (async (dispatch) => {
 export const loadGroupData = () => (async (dispatch) => {
   try {
     const response = await axios.get("http://localhost:8000/groups");
-    console.log(response);
     dispatch(groupsDataSet(response.data));
   }
   catch (error) {
@@ -115,6 +135,14 @@ const isFormDialogOpen = createReducer(false, (builder) => {
     .addCase(formDialogOpened, (_, action) => action.payload);
 });
 
+const snackbar = createReducer({isOpen: false, message: ""}, (builder) => {
+  builder
+    .addCase(toggleSnackbar, (_, action) => {
+      console.log(action);
+      return action.payload;
+    });
+});
+
 export default combineReducers({
   status,
   user,
@@ -122,5 +150,6 @@ export default combineReducers({
   expenses,
   tags,
   groups,
-  isFormDialogOpen
+  isFormDialogOpen,
+  snackbar
 });

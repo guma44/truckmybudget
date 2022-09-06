@@ -1,8 +1,10 @@
 from typing import Optional, List
 import datetime
+
 from pydantic import BaseModel
 from beanie import Document, Link
 
+from models.invoices import Invoice
 from models.groups import Group
 from models.tags import Tag
 
@@ -11,7 +13,7 @@ class Expense(Document):
     name: str
     price: float
     date: datetime.date
-    invoice: Optional[str]
+    invoice: Optional[Link[Invoice]]
     description: Optional[str]
     tags: List[Link[Tag]] = []
     group: Optional[Link[Group]]

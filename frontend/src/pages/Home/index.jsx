@@ -1,10 +1,11 @@
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import Paper from '@mui/material/Paper';
-import { formDialogSelector } from '../../entities/app/selectors';
 import ExpanseTable from '../../components/ExpenseTable';
 import FormDialog from '../../components/FormDialog';
-
+import { Alert, Button, Snackbar } from '@mui/material';
+import { toggleSnackbar } from '../../entities/app';
+import { snackbarSelector } from '../../entities/app/selectors';
 
 
 const StyledPaper = styled(Paper)`
@@ -20,11 +21,22 @@ const StyledPaper = styled(Paper)`
 `;
 
 const HomeView = () => {
+  const { isOpen, message } = useSelector(snackbarSelector);
+  const dispatch = useDispatch();
+  const handleClose = () => {
+    dispatch(toggleSnackbar({ isOpen: false, message: "" }));
+  }
   return (
-      <StyledPaper>
-          <FormDialog></FormDialog>
-          <ExpanseTable></ExpanseTable>
-      </StyledPaper>
+    <StyledPaper>
+      <FormDialog></FormDialog>
+      {isOpen && (<Snackbar open={true} autoHideDuration={3000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          {message}
+        </Alert>
+      </Snackbar>)}
+      <Button onClick={() => dispatch(toggleSnackbar({ isOpen: true, message: "Test" }))}>Test</Button>
+      <ExpanseTable></ExpanseTable>
+    </StyledPaper>
   );
 };
 

@@ -39,3 +39,8 @@ export const formDialogSelector = createSelector(
   applicationStateSelector,
   ({ isFormDialogOpen }) => isFormDialogOpen
 );
+
+export const snackbarSelector = createSelector(
+  applicationStateSelector,
+  ({ snackbar }) => snackbar
+);
