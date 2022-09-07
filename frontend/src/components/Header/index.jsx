@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { useState } from 'react';
-import { applicationUserSelector } from '../../entities/app/selectors';
+// import { applicationUserSelector } from '../../entities/app/selectors';
 import { useSelector } from 'react-redux';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import DrawerComponent from "../Drawer"
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Header = ({ appName }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const user = useSelector(applicationUserSelector);
+  // const user = useSelector(applicationUserSelector);
 
   const classes = useStyles();
   const theme = useTheme();

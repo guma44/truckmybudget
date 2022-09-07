@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { PropTypes } from 'prop-types';
-import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -17,12 +16,9 @@ import DownloadIcon from '@mui/icons-material/Download';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete'
-import FormDialog from '../FormDialog';
-import { expensesSelector } from '../../entities/app/selectors';
 import { useSelector, useDispatch } from 'react-redux';
-import { useEffect } from 'react';
-import { loadExpenseData } from '../../entities/app';
-import { formDialogOpened } from '../../entities/app';
+import { openExpenseDialog } from '../../redux/features/expenseDialogSlice';
+import { useGetExpensesQuery, useDeleteExpenseMutation } from '../../redux/api/expensesApi'
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -148,7 +144,7 @@ const ExpenseTableToolbar = (props) => {
   const dispatch = useDispatch();
 
   const openDialogHandler = () => {
-    dispatch(formDialogOpened(true));
+    dispatch(openExpenseDialog());
   }
 
   return (
@@ -168,17 +164,16 @@ const ExpenseTableToolbar = (props) => {
 };
 
 export default function ExpenseTable() {
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
+  const [order, setOrder] = React.useState('desc');
+  const [orderBy, setOrderBy] = React.useState('date');
   const [selected, setSelected] = React.useState("");
-  const expenses = useSelector(expensesSelector);
-  
+  const {
+    data: expenses,
+    isLoading
+  } = useGetExpensesQuery();
+  const [ deleteExpense ] = useDeleteExpenseMutation();
 
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(loadExpenseData());
-  }, []);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -193,11 +188,16 @@ export default function ExpenseTable() {
 
   const handleDeleteExpense = (event, id) => {
     console.log("Deleting " + id);
+    deleteExpense(id);
   }
 
   const isRowSelected = (id) => {
     console.log(id === selected);
     return id === selected;
+  }
+
+  if (isLoading) {
+    return "Loading.."
   }
 
   return (

@@ -1,11 +1,11 @@
-import { combineReducers } from 'redux';
+// import { combineReducers } from 'redux';
 
-import appReducer from './app';
+// import appReducer from './app';
 
 
-const reducers = combineReducers({
-  appTime: Date.now,
-  application: appReducer,
-});
+// const reducers = combineReducers({
+//   appTime: Date.now,
+//   application: appReducer,
+// });
 
-export default reducers;
+// export default reducers;

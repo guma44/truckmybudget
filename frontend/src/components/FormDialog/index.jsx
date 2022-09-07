@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { useEffect } from 'react';
-import axios from "axios";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -12,14 +10,12 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-import { useSelector, useDispatch } from 'react-redux';
-import { formDialogSelector } from '../../entities/app/selectors';
-import { formDialogOpened } from '../../entities/app';
-import { groupsSelector } from '../../entities/app/selectors';
-import { tagsSelector } from '../../entities/app/selectors';
-import { loadGroupData } from '../../entities/app';
-import { loadTagData } from '../../entities/app';
-import { loadExpenseData } from '../../entities/app';
+import { useDispatch } from 'react-redux';
+import { closeExpenseDialog } from '../../redux/features/expenseDialogSlice';
+import { useGetTagsQuery } from '../../redux/api/tagsApi';
+import { useGetGroupsQuery } from '../../redux/api/groupsApi';
+import { useCreateExpenseMutation } from '../../redux/api/expensesApi';
+import { useCreateInvoiceMutation } from '../../redux/api/invoicesApi';
 import { Chip, InputAdornment } from '@material-ui/core';
 import { Autocomplete, Box, Stack, Typography } from '@mui/material';
 
@@ -40,17 +36,12 @@ export default function FormDialog(props) {
   const [tags, setTags] = React.useState(initialTags || []);
   const [description, setDescription] = React.useState(initialDescription || "");
   const [invoice, setInvoice] = React.useState(initialInvoice || null);
-  const [invoiceId, setInvoiceId] = React.useState(initialInvoice ? initialInvoice._id : null);
-  const open = useSelector(formDialogSelector);
-  const preexistingGroups = useSelector(groupsSelector);
-  const preexistingTags = useSelector(tagsSelector);
-
+  const open = true;
+  const {data: preexistingTags, isTagsLoading} = useGetTagsQuery();
+  const {data: preexistingGroups, isGroupsLoading} = useGetGroupsQuery();
+  const [ createExpense ] = useCreateExpenseMutation();
+  const [ createInvoice ] = useCreateInvoiceMutation();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(loadGroupData());
-    dispatch(loadTagData());
-  }, []);
 
   const onTagsChange = (event, values) => {
     setTags(values);
@@ -65,7 +56,7 @@ export default function FormDialog(props) {
   }
 
   const handleClose = () => {
-    dispatch(formDialogOpened(false));
+    dispatch(closeExpenseDialog());
     setDate(null);
     setName("");
     setPrice("");
@@ -75,49 +66,25 @@ export default function FormDialog(props) {
     setInvoice(null);
   };
 
-  const addExpense = (data) => {
-    try {
-      console.log(data);
-      axios.post("http://localhost:8000/expenses", data);
-    } catch (error) {
-      console.log(error);
-    }
-    dispatch(loadExpenseData());
-    dispatch(formDialogOpened(false));
-    setDate(null);
-    setName("");
-    setPrice("");
-    setGroup("");
-    setTags([]);
-    setDescription("");
-    setInvoice(null);
-  }
-
   const handleAddExpense = () => {
-    if (invoice._id) {
-      const data = {
-        name: name,
-        price: price,
-        date: date,
-        description: description,
-        tags: tags ? tags.map((item) => item._id) : null,
-        group: group ? group._id : null,
-        invoice: invoice._id
-      };
-      addExpense(data);
-    }
-    else {
-      if (invoice) {
+    if (invoice) {
+      if (invoice._id) {
+        const data = {
+          name: name,
+          price: price,
+          date: date,
+          description: description,
+          tags: tags ? tags.map((item) => item._id) : null,
+          group: group ? group._id : null,
+          invoice: invoice._id
+        };
+        createExpense(data);
+      }
+      else {
         let bodyFormData = new FormData();
         bodyFormData.append("file", invoice);
-        axios({
-          method: "post",
-          url: "http://localhost:8000/invoices",
-          data: bodyFormData,
-          headers: { "Content-Type": "multipart/form-data" },
-        })
-          .then(function (response) {
-            //handle success
+        createInvoice(bodyFormData).unwrap()
+        .then(function (response) {
             console.log(response);
             const data = {
               name: name,
@@ -126,28 +93,35 @@ export default function FormDialog(props) {
               description: description,
               tags: tags ? tags.map((item) => item._id) : null,
               group: group ? group._id : null,
-              invoice: response.data._id
+              invoice: response._id
             };
-            addExpense(data);
+            createExpense(data);
           })
-          .catch(function (response) {
-            //handle error
-            console.log(response);
+          .catch(function (error) {
+            console.log(error);
           });
       }
-      else {
-        const data = {
-          name: name,
-          price: price,
-          date: date,
-          description: description,
-          tags: tags ? tags.map((item) => item._id) : null,
-          group: group ? group._id : null,
-        };
-        addExpense(data);
-      }
     }
-
+    else {
+      const data = {
+        name: name,
+        price: price,
+        date: date,
+        description: description,
+        tags: tags ? tags.map((item) => item._id) : null,
+        group: group ? group._id : null,
+      };
+      createExpense(data);
+    }
+    setDate(null);
+    setName("");
+    setPrice("");
+    setGroup("");
+    setTags([]);
+    setDescription("");
+    setInvoice(null);
+    dispatch(closeExpenseDialog());
+    
   }
 
   const getTagDisplay = (option, index, getTagProps) => {

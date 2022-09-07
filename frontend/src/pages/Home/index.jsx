@@ -4,8 +4,8 @@ import Paper from '@mui/material/Paper';
 import ExpanseTable from '../../components/ExpenseTable';
 import FormDialog from '../../components/FormDialog';
 import { Alert, Button, Snackbar } from '@mui/material';
-import { toggleSnackbar } from '../../entities/app';
-import { snackbarSelector } from '../../entities/app/selectors';
+// import { toggleSnackbar } from '../../entities/app';
+// import { snackbarSelector } from '../../entities/app/selectors';
 
 
 const StyledPaper = styled(Paper)`
@@ -21,20 +21,21 @@ const StyledPaper = styled(Paper)`
 `;
 
 const HomeView = () => {
-  const { isOpen, message } = useSelector(snackbarSelector);
+  // const { isOpen, message } = useSelector(snackbarSelector);
+  const isDialogOpen = useSelector((state) => state.expenseDialog.isOpen);
   const dispatch = useDispatch();
   const handleClose = () => {
-    dispatch(toggleSnackbar({ isOpen: false, message: "" }));
+    // dispatch(toggleSnackbar({ isOpen: false, message: "" }));
   }
   return (
     <StyledPaper>
-      <FormDialog></FormDialog>
-      {isOpen && (<Snackbar open={true} autoHideDuration={3000} onClose={handleClose}>
+      {isDialogOpen && <FormDialog/>}
+      {false && (<Snackbar open={true} autoHideDuration={3000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
           {message}
         </Alert>
       </Snackbar>)}
-      <Button onClick={() => dispatch(toggleSnackbar({ isOpen: true, message: "Test" }))}>Test</Button>
+      <Button onClick={() => console.log("clicked")}>Test</Button>
       <ExpanseTable></ExpanseTable>
     </StyledPaper>
   );

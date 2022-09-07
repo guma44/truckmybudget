@@ -9,7 +9,7 @@ import HomeContainer from './pages/Home';
 
 import * as Paths from './paths';
 
-import { loadApp } from './entities/app';
+// import { loadApp } from './entities/app';
 
 const theme = createTheme({
   palette: {
@@ -35,9 +35,9 @@ const App = () => {
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(loadApp());
-  }, []);
+  // useEffect(() => {
+  //   dispatch(loadApp());
+  // }, []);
 
   return (
       <ThemeProvider theme={theme}>

@@ -11,7 +11,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 // import configureStore from './config/redux/configureStore';
-import configureStore from './config/redux/configureStore';
+import configureStore from './redux/store';
 
 // create store object
 const store = configureStore();
