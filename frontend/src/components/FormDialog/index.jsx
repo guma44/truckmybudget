@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux';
 import { closeExpenseDialog } from '../../redux/features/expenseDialogSlice';
 import { useGetTagsQuery } from '../../redux/api/tagsApi';
 import { useGetGroupsQuery } from '../../redux/api/groupsApi';
+import { useGetAccountsQuery, useSubtractFromAccountMutation } from '../../redux/api/accountsApi';
 import { useCreateExpenseMutation } from '../../redux/api/expensesApi';
 import { useCreateInvoiceMutation } from '../../redux/api/invoicesApi';
 import { Chip, InputAdornment } from '@material-ui/core';
@@ -25,13 +26,17 @@ export default function FormDialog(props) {
     date: initialDate,
     name: initialName,
     price: initialPrice,
+    account: initialAccount,
     group: initialGroup,
     tags: initialTags,
     description: initialDescription,
-    invoice: initialInvoice } = props
+    invoice: initialInvoice,
+    isOpen
+  } = props
   const [date, setDate] = React.useState(initialDate || null);
   const [name, setName] = React.useState(initialName || "");
   const [price, setPrice] = React.useState(initialPrice || "");
+  const [account, setAccount] = React.useState(initialAccount || "");
   const [group, setGroup] = React.useState(initialGroup || "");
   const [tags, setTags] = React.useState(initialTags || []);
   const [description, setDescription] = React.useState(initialDescription || "");
@@ -39,9 +44,13 @@ export default function FormDialog(props) {
   const open = true;
   const {data: preexistingTags, isTagsLoading} = useGetTagsQuery();
   const {data: preexistingGroups, isGroupsLoading} = useGetGroupsQuery();
+  const {data: preexistingAccounts, isAccountsLoading} = useGetAccountsQuery();
   const [ createExpense ] = useCreateExpenseMutation();
   const [ createInvoice ] = useCreateInvoiceMutation();
+  const [ subtractFromAccount ] = useSubtractFromAccountMutation();
   const dispatch = useDispatch();
+
+
 
   const onTagsChange = (event, values) => {
     setTags(values);
@@ -49,6 +58,10 @@ export default function FormDialog(props) {
 
   const onGroupChange = (event, value) => {
     setGroup(value);
+  }
+
+  const onAccountChange = (event, value) => {
+    setAccount(value);
   }
 
   const onInvoiceChange = (event) => {
@@ -76,16 +89,20 @@ export default function FormDialog(props) {
           description: description,
           tags: tags ? tags.map((item) => item._id) : null,
           group: group ? group._id : null,
+          account: account._id,
           invoice: invoice._id
         };
-        createExpense(data);
+        createExpense(data).unwrap().then((response) => {
+          subtractFromAccount({id: account._id, amount: price});
+        }).catch((error) => {
+          console.log(error);
+        });
       }
       else {
         let bodyFormData = new FormData();
         bodyFormData.append("file", invoice);
         createInvoice(bodyFormData).unwrap()
         .then(function (response) {
-            console.log(response);
             const data = {
               name: name,
               price: price,
@@ -93,9 +110,14 @@ export default function FormDialog(props) {
               description: description,
               tags: tags ? tags.map((item) => item._id) : null,
               group: group ? group._id : null,
+              account: account._id,
               invoice: response._id
             };
-            createExpense(data);
+            createExpense(data).unwrap().then((response) => {
+              subtractFromAccount({id: account._id, amount: price});
+            }).catch((error) => {
+              console.log(error);
+            });
           })
           .catch(function (error) {
             console.log(error);
@@ -110,8 +132,13 @@ export default function FormDialog(props) {
         description: description,
         tags: tags ? tags.map((item) => item._id) : null,
         group: group ? group._id : null,
+        account: account._id
       };
-      createExpense(data);
+      createExpense(data).unwrap().then((response) => {
+        subtractFromAccount({id: account._id, amount: price});
+      }).catch((error) => {
+        console.log(error);
+      });;
     }
     setDate(null);
     setName("");
@@ -127,7 +154,6 @@ export default function FormDialog(props) {
   const getTagDisplay = (option, index, getTagProps) => {
     let tag = {}
     if (option._id === undefined) {
-      console.log(option);
       tag = {
         name: option,
         color: "blue",
@@ -146,7 +172,7 @@ export default function FormDialog(props) {
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={isOpen} onClose={handleClose}>
         <DialogTitle>Add Expense</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -182,6 +208,23 @@ export default function FormDialog(props) {
               setPrice(event.target.value);
             }}
           />
+          <Autocomplete
+            options={preexistingAccounts || []}
+            getOptionLabel={option => option.name || option}
+            onChange={onAccountChange}
+            isOptionEqualToValue={(option, value) => option._id === value._id}
+            renderInput={params => (
+              <TextField
+                {...params}
+                required
+                variant="standard"
+                label="Account"
+                placeholder="Select account"
+                margin="dense"
+                fullWidth
+              />
+            )}
+          />
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label="Date"
@@ -189,7 +232,6 @@ export default function FormDialog(props) {
               inputFormat="YYYY-MM-DD"
               onChange={(event) => {
                 const d = event.toISOString().split('T')[0]
-                console.log(d);
                 setDate(d);
               }}
               renderInput={(params) => <TextField margin="dense" required {...params} />}

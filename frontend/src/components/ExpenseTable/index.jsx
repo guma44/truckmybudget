@@ -16,7 +16,8 @@ import DownloadIcon from '@mui/icons-material/Download';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete'
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAddToAccountMutation } from '../../redux/api/accountsApi';
 import { openExpenseDialog } from '../../redux/features/expenseDialogSlice';
 import { useGetExpensesQuery, useDeleteExpenseMutation } from '../../redux/api/expensesApi'
 
@@ -172,7 +173,7 @@ export default function ExpenseTable() {
     isLoading
   } = useGetExpensesQuery();
   const [ deleteExpense ] = useDeleteExpenseMutation();
-
+  const [ addToAccount ] = useAddToAccountMutation();
   const dispatch = useDispatch();
 
   const handleRequestSort = (event, property) => {
@@ -186,13 +187,13 @@ export default function ExpenseTable() {
     setSelected(id);
   };
 
-  const handleDeleteExpense = (event, id) => {
-    console.log("Deleting " + id);
-    deleteExpense(id);
+  const handleDeleteExpense = (event, expense) => {
+    deleteExpense(expense._id).unwrap().then((response) => {
+      addToAccount({id: expense.account._id, amount: expense.price})
+    });
   }
 
   const isRowSelected = (id) => {
-    console.log(id === selected);
     return id === selected;
   }
 
@@ -254,7 +255,7 @@ export default function ExpenseTable() {
 
                       <TableCell>
                         <IconButton><EditIcon/></IconButton>
-                        <IconButton onClick={(event) => handleDeleteExpense(event, row._id)}><DeleteIcon/></IconButton>
+                        <IconButton onClick={(event) => handleDeleteExpense(event, row)}><DeleteIcon/></IconButton>
                       </TableCell>
                     </TableRow>
                   );

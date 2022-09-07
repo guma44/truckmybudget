@@ -6,6 +6,7 @@ from beanie import Document, Link
 
 from models.invoices import Invoice
 from models.groups import Group
+from models.accounts import Account
 from models.tags import Tag
 
 
@@ -17,6 +18,7 @@ class Expense(Document):
     description: Optional[str]
     tags: List[Link[Tag]] = []
     group: Optional[Link[Group]]
+    account: Link[Account]
 
     class Settings:
         name = "expenses"
@@ -34,7 +36,8 @@ class Expense(Document):
                 "price": 35.4,
                 "date": "2022-02-04",
                 "tags": ["TAG_ID"],
-                "group": "GROUP_ID"
+                "group": "GROUP_ID",
+                "account": "ACCOUNT_ID"
             }
         }
 
@@ -47,3 +50,4 @@ class UpdateExpense(BaseModel):
     description: Optional[str]
     tags: Optional[List[Link[Tag]]]
     group: Optional[Link[Group]]
+    account: Optional[Link[Account]]

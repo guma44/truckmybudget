@@ -4,7 +4,9 @@ import { expensesApi } from './api/expensesApi';
 import { groupsApi } from './api/groupsApi';
 import { tagsApi } from './api/tagsApi';
 import { invoicesApi } from './api/invoicesApi';
+import { accountsApi } from './api/accountsApi';
 import expenseDialogReducer from './features/expenseDialogSlice';
+import accountDialogReducer from './features/accountsDialogSlice';
 
 
  const configureStore = (preloadedState = {}) => configureStoreToolkit({
@@ -13,7 +15,9 @@ import expenseDialogReducer from './features/expenseDialogSlice';
     [groupsApi.reducerPath]: groupsApi.reducer,
     [tagsApi.reducerPath]: tagsApi.reducer,
     [invoicesApi.reducerPath]: invoicesApi.reducer,
-    expenseDialog: expenseDialogReducer
+    [accountsApi.reducerPath]: accountsApi.reducer,
+    expenseDialog: expenseDialogReducer,
+    accountDialog: accountDialogReducer
   },
   devTools: process.env.NODE_ENV !== 'production',
   preloadedState,
@@ -22,7 +26,8 @@ import expenseDialogReducer from './features/expenseDialogSlice';
       expensesApi.middleware,
       groupsApi.middleware,
       tagsApi.middleware,
-      invoicesApi.middleware
+      invoicesApi.middleware,
+      accountsApi.middleware
     ]),
 });
 
