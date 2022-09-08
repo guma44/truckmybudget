@@ -6,6 +6,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Header from './components/Header';
 import NotFound from './pages/NotFound';
 import HomeContainer from './pages/Home';
+import Loginontainer from './pages/Login';
 
 import * as Paths from './paths';
 
@@ -45,6 +46,7 @@ const App = () => {
           <Header />
           <Switch>
             <Route exact path={Paths.HOME} component={HomeContainer} />
+            <Route exact path="/login" component={Loginontainer} />
             <Route path="*" component={NotFound} />
           </Switch>
         </>
