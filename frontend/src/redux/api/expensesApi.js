@@ -17,6 +17,17 @@ export const expensesApi = createApi({
       },
       invalidatesTags: [{ type: 'Expenses', id: 'LIST' }]
     }),
+    updateExpense: builder.mutation({
+      query({id, expense}) {
+        return {
+          url: `/expenses/${id}`,
+          method: 'PUT',
+          // credentials: 'include',
+          body: expense,
+        };
+      },
+      invalidatesTags: [{ type: 'Expenses', id: 'LIST' }]
+    }),
     getExpenses: builder.query({
       query() {
         return {
@@ -40,6 +51,7 @@ export const expensesApi = createApi({
 
 export const {
   useCreateExpenseMutation,
+  useUpdateExpenseMutation,
   useGetExpensesQuery,
   useDeleteExpenseMutation
 } = expensesApi

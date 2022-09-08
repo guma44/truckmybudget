@@ -7,6 +7,7 @@ import { invoicesApi } from './api/invoicesApi';
 import { accountsApi } from './api/accountsApi';
 import expenseDialogReducer from './features/expenseDialogSlice';
 import accountDialogReducer from './features/accountsDialogSlice';
+import editExpenseDialogReducer from './features/editExpenseDialogSlice';
 
 
  const configureStore = (preloadedState = {}) => configureStoreToolkit({
@@ -17,7 +18,8 @@ import accountDialogReducer from './features/accountsDialogSlice';
     [invoicesApi.reducerPath]: invoicesApi.reducer,
     [accountsApi.reducerPath]: accountsApi.reducer,
     expenseDialog: expenseDialogReducer,
-    accountDialog: accountDialogReducer
+    accountDialog: accountDialogReducer,
+    editExpenseDialog: editExpenseDialogReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
   preloadedState,

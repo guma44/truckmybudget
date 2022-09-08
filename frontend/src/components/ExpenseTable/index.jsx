@@ -20,6 +20,7 @@ import { useDispatch } from 'react-redux';
 import { useAddToAccountMutation } from '../../redux/api/accountsApi';
 import { openExpenseDialog } from '../../redux/features/expenseDialogSlice';
 import { useGetExpensesQuery, useDeleteExpenseMutation } from '../../redux/api/expensesApi'
+import { openEditExpenseDialog } from '../../redux/features/editExpenseDialogSlice';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -187,6 +188,10 @@ export default function ExpenseTable() {
     setSelected(id);
   };
 
+  const handleEditExpense = (event, expense) => {
+    dispatch(openEditExpenseDialog(expense));
+  }
+
   const handleDeleteExpense = (event, expense) => {
     deleteExpense(expense._id).unwrap().then((response) => {
       addToAccount({id: expense.account._id, amount: expense.price})
@@ -254,7 +259,7 @@ export default function ExpenseTable() {
                       </TableCell>
 
                       <TableCell>
-                        <IconButton><EditIcon/></IconButton>
+                        <IconButton onClick={(event) => handleEditExpense(event, row)}><EditIcon/></IconButton>
                         <IconButton onClick={(event) => handleDeleteExpense(event, row)}><DeleteIcon/></IconButton>
                       </TableCell>
                     </TableRow>
