@@ -26,36 +26,6 @@ async def get_accounts() -> List[Account]:
     return accounts
 
 
-@router.put("/{id}/subtract", response_description="Account record updated")
-async def subtract_from_account(id: PydanticObjectId, amount: AmendAccount) -> Account:
-    account = await Account.get(id)
-    if not account:
-        raise HTTPException(
-            status_code=404,
-            detail="Account record not found!"
-        )
-    new_amount = account.amount - amount.amount
-    if new_amount < 0:
-        raise HTTPException(
-            status_code=400,
-            detail=f"You do not have enough money in this account to deduct {account.amount}"
-        )
-    await account.update({"$set": {"amount": new_amount}})
-    return account
-
-@router.put("/{id}/add", response_description="Account record updated")
-async def add_to_account(id: PydanticObjectId, amount: AmendAccount) -> Account:
-    account = await Account.get(id)
-    if not account:
-        raise HTTPException(
-            status_code=404,
-            detail="Account record not found!"
-        )
-    new_amount = account.amount + amount.amount
-    await account.update({"$set": {"amount": new_amount}})
-    return account
-
-
 @router.put("/{id}", response_description="Account record updated")
 async def update_account_data(id: PydanticObjectId, req: Account) -> Account:
     req = {k: v for k, v in req.dict().items() if v is not None}

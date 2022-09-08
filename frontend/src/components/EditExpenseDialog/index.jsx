@@ -13,7 +13,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useDispatch } from 'react-redux';
 import { useGetTagsQuery } from '../../redux/api/tagsApi';
 import { useGetGroupsQuery } from '../../redux/api/groupsApi';
-import { useGetAccountsQuery, useSubtractFromAccountMutation, useAddToAccountMutation } from '../../redux/api/accountsApi';
+import { useGetAccountsQuery } from '../../redux/api/accountsApi';
 import { useUpdateExpenseMutation } from '../../redux/api/expensesApi';
 import { useCreateInvoiceMutation } from '../../redux/api/invoicesApi';
 import { Chip, InputAdornment } from '@material-ui/core';
@@ -37,8 +37,6 @@ export default function FormDialog(props) {
   const {data: preexistingAccounts, isAccountsLoading} = useGetAccountsQuery();
   const [ updateExpense ] = useUpdateExpenseMutation();
   const [ createInvoice ] = useCreateInvoiceMutation();
-  const [ subtractFromAccount ] = useSubtractFromAccountMutation();
-  const [ addToAccount ] = useAddToAccountMutation();
   const dispatch = useDispatch();
 
 
@@ -83,15 +81,7 @@ export default function FormDialog(props) {
           account: account._id,
           invoice: invoice._id
         };
-        updateExpense({id: expenseId, expense: data}).unwrap().then((response) => {
-          if (price > initialExpense.price) {
-            subtractFromAccount({id: account._id, amount: price - initialExpense.price});
-          } else if (price < initialExpense.price) {
-            addToAccount({id: account._id, amount: initialExpense.price - price});
-          }
-        }).catch((error) => {
-          console.log(error);
-        });
+        updateExpense({id: expenseId, expense: data})
       }
       else {
         let bodyFormData = new FormData();
@@ -108,15 +98,7 @@ export default function FormDialog(props) {
               account: account._id,
               invoice: response._id
             };
-            updateExpense({id: expenseId, expense: data}).unwrap().then((response) => {
-              if (price > initialExpense.price) {
-                subtractFromAccount({id: account._id, amount: price - initialExpense.price});
-              } else if (price < initialExpense.price) {
-                addToAccount({id: account._id, amount: initialExpense.price - price});
-              }
-            }).catch((error) => {
-              console.log(error);
-            });
+            updateExpense({id: expenseId, expense: data})
           })
           .catch(function (error) {
             console.log(error);
@@ -133,15 +115,7 @@ export default function FormDialog(props) {
         group: group ? group._id : null,
         account: account._id
       };
-      updateExpense({id: expenseId, expense: data}).unwrap().then((response) => {
-        if (price > initialExpense.price) {
-          subtractFromAccount({id: account._id, amount: price - initialExpense.price});
-        } else if (price < initialExpense.price) {
-          addToAccount({id: account._id, amount: initialExpense.price - price});
-        }
-      }).catch((error) => {
-        console.log(error);
-      });;
+      updateExpense({id: expenseId, expense: data})
     }
     setDate(null);
     setName("");

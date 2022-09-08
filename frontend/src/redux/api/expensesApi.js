@@ -1,10 +1,7 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { TDBApi } from '.';
 
 // initialize an empty api service that we'll inject endpoints into later as needed
-export const expensesApi = createApi({
-  reducerPath: "expenses",
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8000' }),
-  tagTypes: ['Expenses'],
+export const expensesApi = TDBApi.injectEndpoints({
   endpoints: (builder) => ({
     createExpense: builder.mutation({
       query(expense) {
@@ -15,7 +12,7 @@ export const expensesApi = createApi({
           body: expense,
         };
       },
-      invalidatesTags: [{ type: 'Expenses', id: 'LIST' }]
+      invalidatesTags: [{ type: 'Expenses', id: 'LIST' }, {type: "Accounts", id: "LIST"}]
     }),
     updateExpense: builder.mutation({
       query({id, expense}) {
@@ -26,7 +23,7 @@ export const expensesApi = createApi({
           body: expense,
         };
       },
-      invalidatesTags: [{ type: 'Expenses', id: 'LIST' }]
+      invalidatesTags: [{ type: 'Expenses', id: 'LIST' }, {type: "Accounts", id: "LIST"}]
     }),
     getExpenses: builder.query({
       query() {
@@ -44,7 +41,7 @@ export const expensesApi = createApi({
           method: "DELETE"
         };
       },
-      invalidatesTags: [{ type: "Expenses", id: "LIST"}]
+      invalidatesTags: [{ type: "Expenses", id: "LIST"}, {type: "Accounts", id: "LIST"}]
     }),
   }),
 })

@@ -17,7 +17,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useDispatch } from 'react-redux';
-import { useAddToAccountMutation } from '../../redux/api/accountsApi';
+import { openSnackbar } from '../../redux/features/snackbarSlice';
 import { openExpenseDialog } from '../../redux/features/expenseDialogSlice';
 import { useGetExpensesQuery, useDeleteExpenseMutation } from '../../redux/api/expensesApi'
 import { openEditExpenseDialog } from '../../redux/features/editExpenseDialogSlice';
@@ -174,7 +174,6 @@ export default function ExpenseTable() {
     isLoading
   } = useGetExpensesQuery();
   const [ deleteExpense ] = useDeleteExpenseMutation();
-  const [ addToAccount ] = useAddToAccountMutation();
   const dispatch = useDispatch();
 
   const handleRequestSort = (event, property) => {
@@ -193,9 +192,19 @@ export default function ExpenseTable() {
   }
 
   const handleDeleteExpense = (event, expense) => {
-    deleteExpense(expense._id).unwrap().then((response) => {
-      addToAccount({id: expense.account._id, amount: expense.price})
-    });
+    deleteExpense(expense._id).unwrap()
+      .then((response) => {
+        dispatch(openSnackbar({
+          message: "Expense deleted",
+          severity: "warning"
+        }));
+      })
+      .catch((error) => {
+        dispatch(openSnackbar({
+          message: error.data.detail,
+          severity: "error"
+        }));
+      })
   }
 
   const isRowSelected = (id) => {

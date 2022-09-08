@@ -6,6 +6,7 @@ import uuid
 import os
 
 from models.expenses import Expense
+from models.accounts import Account
 
 
 router = APIRouter()
@@ -14,7 +15,15 @@ router = APIRouter()
 
 @router.post("/", response_description="Expense added to the database")
 async def add_expense(expense: Expense) -> Expense:
+    account = await expense.account.fetch()
+    new_account_amount = account.amount - expense.price
+    if new_account_amount < 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Not enough money on account"
+        )
     await expense.create()
+    await account.update({"$set": {"amount": new_account_amount}})
     return expense
 
 
@@ -43,17 +52,31 @@ async def update_expense_data(id: PydanticObjectId, req: Expense) -> Expense:
             status_code=404,
             detail="Expense record not found!"
         )
-
+    account = await expense.account.fetch()
+    new_account_amount = None
+    if "price" in req:
+        if req["price"] > expense.price:
+            new_account_amount = account.amount - (req["price"] - expense.price)
+        elif req["price"] < expense.price:
+            new_account_amount = account.amount + (expense.price - req["price"])
+        if new_account_amount < 0:
+            raise HTTPException(
+                status_code=400,
+                detail="Not enough money on account"
+            )
     await expense.update(update_query)
+    if new_account_amount is not None:
+        await account.update({"$set": {"amount": new_account_amount}})
     return expense
 
 
 @router.delete("/{id}", response_description="Expense record deleted from the database")
 async def delete_expense_data(id: PydanticObjectId) -> dict:
     record = await Expense.get(id)
-
     if not record:
         raise HTTPException(status_code=404, detail="Expense record not found!")
-
+    account = await record.account.fetch()
+    new_account_amount = account.amount + record.price
     await record.delete()
+    await account.update({"$set": {"amount": new_account_amount}})
     return {"message": "Record deleted successfully"}

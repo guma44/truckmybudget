@@ -1,10 +1,7 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { TDBApi } from '.';
 
 // initialize an empty api service that we'll inject endpoints into later as needed
-export const invoicesApi = createApi({
-  reducerPath: "invoices",
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8000' }),
-  tagTypes: ['Invoices'],
+export const invoicesApi = TDBApi.injectEndpoints({
   endpoints: (builder) => ({
     createInvoice: builder.mutation({
       query(formData) {

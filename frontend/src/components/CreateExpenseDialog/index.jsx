@@ -12,9 +12,10 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import { useDispatch } from 'react-redux';
 import { closeExpenseDialog } from '../../redux/features/expenseDialogSlice';
+import { openSnackbar } from '../../redux/features/snackbarSlice';
 import { useGetTagsQuery } from '../../redux/api/tagsApi';
 import { useGetGroupsQuery } from '../../redux/api/groupsApi';
-import { useGetAccountsQuery, useSubtractFromAccountMutation } from '../../redux/api/accountsApi';
+import { useGetAccountsQuery } from '../../redux/api/accountsApi';
 import { useCreateExpenseMutation } from '../../redux/api/expensesApi';
 import { useCreateInvoiceMutation } from '../../redux/api/invoicesApi';
 import { Chip, InputAdornment } from '@material-ui/core';
@@ -46,7 +47,6 @@ export default function FormDialog(props) {
   const {data: preexistingAccounts, isAccountsLoading} = useGetAccountsQuery();
   const [ createExpense ] = useCreateExpenseMutation();
   const [ createInvoice ] = useCreateInvoiceMutation();
-  const [ subtractFromAccount ] = useSubtractFromAccountMutation();
   const dispatch = useDispatch();
 
 
@@ -80,48 +80,35 @@ export default function FormDialog(props) {
 
   const handleAddExpense = () => {
     if (invoice) {
-      if (invoice._id) {
-        const data = {
-          name: name,
-          price: price,
-          date: date,
-          description: description,
-          tags: tags ? tags.map((item) => item._id) : null,
-          group: group ? group._id : null,
-          account: account._id,
-          invoice: invoice._id
-        };
-        createExpense(data).unwrap().then((response) => {
-          subtractFromAccount({id: account._id, amount: price});
-        }).catch((error) => {
-          console.log(error);
+      let bodyFormData = new FormData();
+      bodyFormData.append("file", invoice);
+      createInvoice(bodyFormData).unwrap()
+      .then(function (response) {
+          const data = {
+            name: name,
+            price: price,
+            date: date,
+            description: description,
+            tags: tags ? tags.map((item) => item._id) : null,
+            group: group ? group._id : null,
+            account: account._id,
+            invoice: response._id
+          };
+          return createExpense(data).unwrap();
+        })
+        .then((response) => {
+          dispatch(openSnackbar({
+            message: "Expense created",
+            severity: "success"
+          }));
+          handleClose();
+        })
+        .catch(function (error) {
+          dispatch(openSnackbar({
+            message: error.data.detail,
+            severity: "error"
+          }));
         });
-      }
-      else {
-        let bodyFormData = new FormData();
-        bodyFormData.append("file", invoice);
-        createInvoice(bodyFormData).unwrap()
-        .then(function (response) {
-            const data = {
-              name: name,
-              price: price,
-              date: date,
-              description: description,
-              tags: tags ? tags.map((item) => item._id) : null,
-              group: group ? group._id : null,
-              account: account._id,
-              invoice: response._id
-            };
-            createExpense(data).unwrap().then((response) => {
-              subtractFromAccount({id: account._id, amount: price});
-            }).catch((error) => {
-              console.log(error);
-            });
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-      }
     }
     else {
       const data = {
@@ -133,20 +120,22 @@ export default function FormDialog(props) {
         group: group ? group._id : null,
         account: account._id
       };
-      createExpense(data).unwrap().then((response) => {
-        subtractFromAccount({id: account._id, amount: price});
-      }).catch((error) => {
-        console.log(error);
-      });;
+      createExpense(data).unwrap()
+        .then((response) => {
+          dispatch(openSnackbar({
+            message: "Expense created",
+            severity: "success"
+          }));
+          handleClose();
+        })
+        .catch((error) => {
+          dispatch(openSnackbar({
+            message: error.data.detail,
+            severity: "error"
+          }));
+        })
     }
-    setDate(null);
-    setName("");
-    setPrice("");
-    setGroup("");
-    setTags([]);
-    setDescription("");
-    setInvoice(null);
-    dispatch(closeExpenseDialog());
+
     
   }
 

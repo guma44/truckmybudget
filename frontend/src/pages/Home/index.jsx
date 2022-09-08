@@ -1,12 +1,15 @@
+import { forwardRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import Paper from '@mui/material/Paper';
 import ExpanseTable from '../../components/ExpenseTable';
 import CreateExpenseDialog from '../../components/CreateExpenseDialog';
 import EditExpenseDialog from '../../components/EditExpenseDialog';
-import { Alert, Snackbar } from '@mui/material';
+import { Snackbar } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
 import Accounts from '../../components/Accounts';
 import AddAccountDialog from '../../components/AddAccountDialog';
+import { closeSnackbar } from '../../redux/features/snackbarSlice';
 
 const StyledPaper = styled(Paper)`
   width: 90%;
@@ -20,25 +23,41 @@ const StyledPaper = styled(Paper)`
   }
 `;
 
+const Alert = forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 const HomeView = () => {
-  // const { isOpen, message } = useSelector(snackbarSelector);
+  const dispatch = useDispatch();
+  const { isOpen: isSnackbarOpen, message, severity } = useSelector((state) => state.snackbar);
   const isCreateDialogOpen = useSelector((state) => state.expenseDialog.isOpen);
   const { isOpen: isEditDialogOpen, expense: expenseToEdit } = useSelector((state) => state.editExpenseDialog);
   const isAddAccountDialogOpen = useSelector((state) => state.accountDialog.isOpen);
 
   const handleClose = () => {
-    // dispatch(toggleSnackbar({ isOpen: false, message: "" }));
+    dispatch(closeSnackbar());
   }
   return (
     <StyledPaper>
       <CreateExpenseDialog isOpen={isCreateDialogOpen} />
       {isEditDialogOpen && expenseToEdit && <EditExpenseDialog isOpen={isEditDialogOpen} initialExpense={expenseToEdit}/>}
       {isAddAccountDialogOpen && <AddAccountDialog />}
-      {false && (<Snackbar open={true} autoHideDuration={3000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-          {message}
-        </Alert>
-      </Snackbar>)}
+      {isSnackbarOpen && (
+        <Snackbar
+          open={true}
+          autoHideDuration={2000}
+          onClose={handleClose}
+          anchorOrigin={{vertical: "top", horizontal: "right"}}
+          >
+          <Alert
+            onClose={handleClose}
+            severity={severity}
+            sx={{ width: '100%' }}
+          >
+            {message}
+          </Alert>
+        </Snackbar>
+      )}
       <Accounts></Accounts>
       <ExpanseTable></ExpanseTable>
     </StyledPaper>

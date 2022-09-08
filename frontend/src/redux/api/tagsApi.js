@@ -1,10 +1,7 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { TDBApi } from '.';
 
 // initialize an empty api service that we'll inject endpoints into later as needed
-export const tagsApi = createApi({
-    reducerPath: "tags",
-    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8000' }),
-    tagTypes: ['Tags'],
+export const tagsApi = TDBApi.injectEndpoints({
     endpoints: (builder) => ({
         createTag: builder.mutation({
             query(tag) {

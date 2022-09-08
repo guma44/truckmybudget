@@ -1,10 +1,7 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { TDBApi } from '.';
 
 // initialize an empty api service that we'll inject endpoints into later as needed
-export const groupsApi = createApi({
-  reducerPath: "groups",
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8000' }),
-  tagTypes: ['Groups'],
+export const groupsApi = TDBApi.injectEndpoints({
   endpoints: (builder) => ({
     createGroup: builder.mutation({
       query(group) {
