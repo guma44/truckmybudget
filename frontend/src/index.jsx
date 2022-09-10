@@ -5,10 +5,12 @@ import { render } from 'react-dom';
 import { createGlobalStyle } from 'styled-components';
 
 import { BrowserRouter } from 'react-router-dom';
+import { CookiesProvider } from 'react-cookie';
 import { Provider } from 'react-redux';
 
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import AuthMiddleware from './utils/auth';
 
 // import configureStore from './config/redux/configureStore';
 import configureStore from './redux/store';
@@ -54,7 +56,9 @@ class Index extends Component {
       <Provider store={store}>
         <GlobalStyle />
         <BrowserRouter>
-          <App />
+          <AuthMiddleware>
+            <App />
+          </AuthMiddleware>
         </BrowserRouter>
       </Provider>
     );

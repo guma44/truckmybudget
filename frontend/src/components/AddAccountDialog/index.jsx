@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-
+import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { closeAddAccountDialog } from '../../redux/features/accountsDialogSlice';
 import { useCreateAccountMutation } from '../../redux/api/accountsApi';
@@ -17,6 +17,7 @@ import { Autocomplete, Box, Stack, Typography } from '@mui/material';
 export default function AddAccountDialog() {
   const [name, setName] = React.useState("");
   const [amount, setAmount] = React.useState(0);
+  const [type, setType] = React.useState("bank");
 
   const [ createAccount ] = useCreateAccountMutation();
   const dispatch = useDispatch();
@@ -30,14 +31,15 @@ export default function AddAccountDialog() {
   const handleAddAccount = () => {
     const data = {
       name: name,
-      amount: amount
+      amount: amount,
+      account_type: type
     };
     createAccount(data);
-
     setName("");
     setAmount("");
+    setType("");
+    toast.success("Account created");
     dispatch(closeAddAccountDialog());
-    
   }
 
   return (
@@ -46,7 +48,7 @@ export default function AddAccountDialog() {
         <DialogTitle>Add Account</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Add an expense to your budget.
+            Add an account to use your budget.
           </DialogContentText>
           <TextField
             autoFocus
@@ -76,6 +78,19 @@ export default function AddAccountDialog() {
             }}
             onChange={(event) => {
               setAmount(event.target.value);
+            }}
+          />
+          <TextField
+            margin="dense"
+            id="type"
+            value={type}
+            label="Type"
+            type="text"
+            fullWidth
+            variant="outlined"
+            required
+            onChange={(event) => {
+              setType(event.target.value);
             }}
           />
         </DialogContent>

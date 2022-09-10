@@ -17,10 +17,10 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useDispatch } from 'react-redux';
-import { openSnackbar } from '../../redux/features/snackbarSlice';
 import { openExpenseDialog } from '../../redux/features/expenseDialogSlice';
 import { useGetExpensesQuery, useDeleteExpenseMutation } from '../../redux/api/expensesApi'
 import { openEditExpenseDialog } from '../../redux/features/editExpenseDialogSlice';
+import { toast } from 'react-toastify';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -194,16 +194,10 @@ export default function ExpenseTable() {
   const handleDeleteExpense = (event, expense) => {
     deleteExpense(expense._id).unwrap()
       .then((response) => {
-        dispatch(openSnackbar({
-          message: "Expense deleted",
-          severity: "warning"
-        }));
+        toast.success("Expense deleted");
       })
       .catch((error) => {
-        dispatch(openSnackbar({
-          message: error.data.detail,
-          severity: "error"
-        }));
+        toast.error(error.data.detail);
       })
   }
 

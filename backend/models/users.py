@@ -7,7 +7,7 @@ from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, FastAPIUsers
 from fastapi_users.authentication import (
     AuthenticationBackend,
-    BearerTransport,
+    CookieTransport,
     JWTStrategy,
 )
 from fastapi_users.db import BeanieUserDatabase, ObjectIDIDMixin
@@ -56,7 +56,7 @@ async def get_user_manager(user_db: BeanieUserDatabase = Depends(get_user_db)):
 
 
 
-bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
+bearer_transport = CookieTransport(cookie_name="logged_in", cookie_secure=False)
 
 
 def get_jwt_strategy() -> JWTStrategy:

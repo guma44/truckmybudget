@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import styled from 'styled-components';
@@ -7,9 +7,11 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { useCreateAccountMutation } from '../../redux/api/accountsApi';
+import { useLoginUserMutation } from '../../redux/api/authApi';
 import { InputAdornment, Paper } from '@material-ui/core';
 import { Autocomplete, Box, Stack, Typography } from '@mui/material';
 
@@ -19,7 +21,7 @@ const StyledPaper = styled(Paper)`
   width: 50%;
   margin: 4rem auto;
   padding: 2rem;
-  background-color: #f0f0f0;
+  background-color: #white;
 
   @media (min-width: 768px) {
     margin-top: 2rem;
@@ -28,10 +30,23 @@ const StyledPaper = styled(Paper)`
 `;
 
 
-export default function LoginDialog() {
-  const [name, setName] = React.useState("");
-  const [password, setPassword] = React.useState("");
 
+export default function LoginDialog() {
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginUser, { isLoading, isError, error, isSuccess }] = useLoginUserMutation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state ? location.state.from.pathname : '/';
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success('Login OK');
+      navigate(from);
+    }
+    if (isError) {
+      toast.error("Something went wrong");
+      }
+  }, [isLoading]);
 
   const handleClose = () => {
     console.log("closing");
@@ -40,16 +55,15 @@ export default function LoginDialog() {
   };
 
   const handleLogin = () => {
-    const data = {
-      name: name,
-      password: password
-    };
-    console.log(data);
+    let data = new FormData();
+    data.append("username", name);
+    data.append("password", password);
+    loginUser(data);
   }
 
   return (
     <div>
-      <StyledPaper elevation={0}>
+      <Box width="50%" margin="auto" mt={10}>
           <TextField
             autoFocus
             margin="dense"
@@ -78,11 +92,10 @@ export default function LoginDialog() {
             }}
           />
         <Stack direction="row" spacing={1}>
-          {/* <Button onClick={handleClose} variant="contained">Cancel</Button> */}
           <Button onClick={handleLogin} variant="contained">Login</Button>
         </Stack>
 
-        </StyledPaper>
+        </Box>
     </div>
   );
 }

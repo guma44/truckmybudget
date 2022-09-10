@@ -1,28 +1,20 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { withRouter, Switch, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/Header';
+import RequireUser from './components/RequireUser';
 import NotFound from './pages/NotFound';
 import HomeContainer from './pages/Home';
-import Loginontainer from './pages/Login';
+import LoginContainer from './pages/Login';
 
 import * as Paths from './paths';
 
 // import { loadApp } from './entities/app';
 
 const theme = createTheme({
-  palette: {
-    type: 'dark',
-    primary: {
-      main: '#3f51b5',
-      light: '#c36591',
-    },
-    secondary: {
-      main: '#f50057',
-    },
-  },
 });
 
 
@@ -43,15 +35,22 @@ const App = () => {
   return (
       <ThemeProvider theme={theme}>
         <>
+          <ToastContainer
+            autoClose={1000}
+            hideProgressBar={true}
+            theme="colored"
+            closeButton={false}/>
           <Header />
-          <Switch>
-            <Route exact path={Paths.HOME} component={HomeContainer} />
-            <Route exact path="/login" component={Loginontainer} />
-            <Route path="*" component={NotFound} />
-          </Switch>
+          <Routes>
+            <Route element={<RequireUser allowedRoles={['user', 'admin']} />}>
+              <Route exact path={Paths.HOME} element={<HomeContainer/>} />
+            </Route>
+            <Route exact path="/login" element={<LoginContainer/>} />
+            <Route path="*" element={<NotFound/>} />
+          </Routes>
         </>
       </ThemeProvider>
   );
 };
 
-export default withRouter(App);
+export default App;

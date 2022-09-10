@@ -11,8 +11,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 import { closeExpenseDialog } from '../../redux/features/expenseDialogSlice';
-import { openSnackbar } from '../../redux/features/snackbarSlice';
 import { useGetTagsQuery } from '../../redux/api/tagsApi';
 import { useGetGroupsQuery } from '../../redux/api/groupsApi';
 import { useGetAccountsQuery } from '../../redux/api/accountsApi';
@@ -97,17 +97,11 @@ export default function FormDialog(props) {
           return createExpense(data).unwrap();
         })
         .then((response) => {
-          dispatch(openSnackbar({
-            message: "Expense created",
-            severity: "success"
-          }));
+          toast.success("Expense created");
           handleClose();
         })
         .catch(function (error) {
-          dispatch(openSnackbar({
-            message: error.data.detail,
-            severity: "error"
-          }));
+          toast.error(error.data.detail);
         });
     }
     else {
@@ -122,17 +116,11 @@ export default function FormDialog(props) {
       };
       createExpense(data).unwrap()
         .then((response) => {
-          dispatch(openSnackbar({
-            message: "Expense created",
-            severity: "success"
-          }));
+          toast.success("Expense created");
           handleClose();
         })
         .catch((error) => {
-          dispatch(openSnackbar({
-            message: error.data.detail,
-            severity: "error"
-          }));
+          toast.error(error.data.detail);
         })
     }
 

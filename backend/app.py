@@ -9,7 +9,8 @@ import uuid
 from beanie import init_beanie
 from fastapi import Depends, FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
 
 from db import main_db
 from routes.expenses import router as expenses_router
@@ -32,16 +33,16 @@ from models.tags import Tag
 from models.invoices import Invoice
 from models.accounts import Account
 
-app = FastAPI()
-origins = ["*"]
 
-app.add_middleware(
-    CORSMiddleware,
+origins = ["http://localhost:3000"]
+middleware = [
+    Middleware(CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
-)
+    allow_headers=["*"],)
+]
+app = FastAPI(middleware=middleware)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(
     fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
@@ -80,4 +81,3 @@ async def on_startup():
         database=main_db,
         document_models=[User, Expense, Group, Tag, Invoice, Account],
     )
-

@@ -1,0 +1,29 @@
+version: '3.1'
+
+services:
+  db:
+    image: mongo
+    container_name: tmb_mongodb
+    restart: unless-stopped
+    volumes:
+      - ./db:/data/db
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: trackmybudget
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: trackmybudget
+  backend:
+    build:
+      context: "."
+      dockerfile: ./compose/backend.Dockerfile
+    image: tmb_backend
+    container_name: tmb_backend
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/opt/tmb:z
+    environment:
+      - TMB_BACKEND_DB_URL="mongodb://root:trackmybudget@db:27017"
+    ports:
+      - "8000:8000"

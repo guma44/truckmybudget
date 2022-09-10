@@ -1,75 +1,51 @@
-import {
-  AppBar,
-  Toolbar,
-  CssBaseline,
-  useTheme,
-  Typography,
-  useMediaQuery,
-  makeStyles,
-} from "@material-ui/core";
-import { Link } from "react-router-dom";
-import { useState } from 'react';
-// import { applicationUserSelector } from '../../entities/app/selectors';
+import * as React from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
-import DrawerComponent from "../Drawer"
+import { toast } from 'react-toastify';
 
+import { useLogoutUserMutation } from '../../redux/api/authApi';
 
-const useStyles = makeStyles((theme) => ({
-  navlinks: {
-    marginLeft: theme.spacing(5),
-    display: "flex",
-  },
-  logo: {
-    flexGrow: "1",
-    cursor: "pointer",
-  },
-  link: {
-    textDecoration: "none",
-    color: "white",
-    fontSize: "20px",
-    marginLeft: theme.spacing(20),
-    "&:hover": {
-      color: "yellow",
-      borderBottom: "1px solid white",
-    },
-  },
-}));
+export default function Header() {
+  const { user } = useSelector((state) => state.user);
+  const [logoutUser] = useLogoutUserMutation();
+  const navigate = useNavigate();
 
-const Header = ({ appName }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  // const user = useSelector(applicationUserSelector);
-
-  const classes = useStyles();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
-  function toggleOpen() {
-    setIsOpen(!isOpen);
+  const onLogout = () => {
+    logoutUser();
+    toast.success("Logged out")
+    navigate("/login", { replace: true })
   }
-  return <>
-    <AppBar position="static">
-      <CssBaseline />
-      <Toolbar>
-        <Typography variant="h4" className={classes.logo}>
-        <PointOfSaleIcon/> TMB
-        </Typography>
-        {isMobile ? (
-          <DrawerComponent />
-        ) : (
-          <div className={classes.navlinks}>
-            <Link to="/" className={classes.link}>
-              Home
-            </Link>
-          </div>
-        )}
-      </Toolbar>
-    </AppBar>
-  </>;
-};
 
-Header.defaultProps = {
-  appName: 'APP NAME',
-};
-
-export default Header;
+  return (
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static">
+        <Toolbar>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+          >
+            <PointOfSaleIcon />
+          </IconButton>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            TMB
+          </Typography>
+          <Box padding={2}>
+            <Typography>{user ? user.email : ""}</Typography>
+          </Box>
+          {user && <Button color="inherit" variant="outlined" onClick={onLogout}>Logout</Button>}
+        </Toolbar>
+      </AppBar>
+    </Box>
+  );
+}

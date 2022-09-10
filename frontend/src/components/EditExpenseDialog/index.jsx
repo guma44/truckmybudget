@@ -9,7 +9,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
+import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { useGetTagsQuery } from '../../redux/api/tagsApi';
 import { useGetGroupsQuery } from '../../redux/api/groupsApi';
@@ -19,6 +19,7 @@ import { useCreateInvoiceMutation } from '../../redux/api/invoicesApi';
 import { Chip, InputAdornment } from '@material-ui/core';
 import { Autocomplete, Box, Stack, Typography } from '@mui/material';
 import { closeEditExpenseDialog } from '../../redux/features/editExpenseDialogSlice';
+
 
 
 export default function FormDialog(props) {
@@ -88,6 +89,7 @@ export default function FormDialog(props) {
         bodyFormData.append("file", invoice);
         createInvoice(bodyFormData).unwrap()
         .then(function (response) {
+          toast.success("Invoice created");
             const data = {
               name: name,
               price: price,
@@ -98,10 +100,13 @@ export default function FormDialog(props) {
               account: account._id,
               invoice: response._id
             };
-            updateExpense({id: expenseId, expense: data})
+            return updateExpense({id: expenseId, expense: data}).unwrap()
+          })
+          .then(response => {
+            toast.success("Expense updated");
           })
           .catch(function (error) {
-            console.log(error);
+            toast.error(error.data.detail);
           });
       }
     }

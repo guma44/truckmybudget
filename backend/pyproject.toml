@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = "Backend for TMB App"
+authors = ["Rafal Gumienny <rafal.gumienny@protonmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+beanie = "^1.11.9"
+fastapi = "fastapi-users"
+fastapi-users-db-beanie = "motor"
+multidict = "PyJWT"
+python-multipart = "uvicorn"
+uvicorn = "^0.18.3"
+
+[tool.poetry.group.dev.dependencies]
+black = "pytest"
+isort = "^5.10.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
