@@ -6,49 +6,51 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { useDispatch } from 'react-redux';
-import { closeAddAccountDialog } from '../../redux/features/accountsDialogSlice';
-import { useCreateAccountMutation } from '../../redux/api/accountsApi';
+import { closeAddGroupDialog } from '../../redux/features/groupsDialogSlice';
+import { useCreateGroupMutation } from '../../redux/api/groupsApi';
 import { InputAdornment } from '@material-ui/core';
-import { Autocomplete, Box, Stack, Typography } from '@mui/material';
+import { IconButton } from '@mui/material';
+import PaletteIcon from '@mui/icons-material/Palette';
 
 
-export default function AddAccountDialog() {
+export default function AddGroupDialog() {
   const [name, setName] = React.useState("");
-  const [amount, setAmount] = React.useState(0);
-  const [type, setType] = React.useState("bank");
+  const [color, setColor] = React.useState("");
 
-  const [ createAccount ] = useCreateAccountMutation();
+  const [ createGroup ] = useCreateGroupMutation();
   const dispatch = useDispatch();
 
   const handleClose = () => {
-    dispatch(closeAddAccountDialog());
+    dispatch(closeAddGroupDialog());
     setName("");
-    setAmount(0);
+    setColor(0);
   };
 
-  const handleAddAccount = () => {
+  const handleAddGroup = async () => {
     const data = {
       name: name,
-      amount: amount,
-      account_type: type
+      color: color
     };
-    createAccount(data);
+    try {
+      await createGroup(data).unwrap()
+      toast.success("Group created");
+    } catch (error) {
+      toast.error(error.data.detail);
+    }
     setName("");
-    setAmount("");
-    setType("");
-    toast.success("Account created");
-    dispatch(closeAddAccountDialog());
+    setColor("");
+    dispatch(closeAddGroupDialog());
   }
 
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add Account</DialogTitle>
+        <DialogTitle>Add Group</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Add an account to use with your budget.
+            Add a group to use your budget.
           </DialogContentText>
           <TextField
             autoFocus
@@ -66,37 +68,28 @@ export default function AddAccountDialog() {
           />
           <TextField
             margin="dense"
-            id="amount"
-            value={amount}
-            label="Amount"
-            type="number"
-            fullWidth
-            variant="outlined"
-            required
-            InputProps={{
-              endAdornment: <InputAdornment position="end">PLN</InputAdornment>
-            }}
-            onChange={(event) => {
-              setAmount(event.target.value);
-            }}
-          />
-          <TextField
-            margin="dense"
-            id="type"
-            value={type}
-            label="Type"
+            id="color"
+            value={color}
+            label="Color"
             type="text"
             fullWidth
             variant="outlined"
             required
             onChange={(event) => {
-              setType(event.target.value);
+              setColor(event.target.value);
+            }}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">
+                  <IconButton onClick={() => setColorPicker(true)}>
+                    <PaletteIcon color="inherit"></PaletteIcon>
+                  </IconButton>
+              </InputAdornment>
             }}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} variant="contained">Cancel</Button>
-          <Button onClick={handleAddAccount} variant="contained">Add</Button>
+          <Button onClick={handleAddGroup} variant="contained">Add</Button>
         </DialogActions>
       </Dialog>
     </div>

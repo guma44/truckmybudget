@@ -7,48 +7,55 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { toast } from 'react-toastify';
+// import { SketchPicker } from 'react-color';
 import { useDispatch } from 'react-redux';
-import { closeAddAccountDialog } from '../../redux/features/accountsDialogSlice';
-import { useCreateAccountMutation } from '../../redux/api/accountsApi';
+import PaletteIcon from '@mui/icons-material/Palette';
+import { closeAddTagDialog } from '../../redux/features/tagsDialogSlice';
+import { useCreateTagMutation } from '../../redux/api/tagsApi';
 import { InputAdornment } from '@material-ui/core';
-import { Autocomplete, Box, Stack, Typography } from '@mui/material';
+import { IconButton } from '@mui/material';
 
 
-export default function AddAccountDialog() {
+export default function AddTagDialog() {
   const [name, setName] = React.useState("");
-  const [amount, setAmount] = React.useState(0);
-  const [type, setType] = React.useState("bank");
+  const [color, setColor] = React.useState("");
+  const [ colorPicker, setColorPicker ] = React.useState(false);
 
-  const [ createAccount ] = useCreateAccountMutation();
+  const [ createTag ] = useCreateTagMutation();
   const dispatch = useDispatch();
 
   const handleClose = () => {
-    dispatch(closeAddAccountDialog());
+    dispatch(closeAddTagDialog());
     setName("");
-    setAmount(0);
+    setColor(0);
   };
 
-  const handleAddAccount = () => {
+  const handleAddTag = async () => {
     const data = {
       name: name,
-      amount: amount,
-      account_type: type
+      color: color
     };
-    createAccount(data);
-    setName("");
-    setAmount("");
-    setType("");
-    toast.success("Account created");
-    dispatch(closeAddAccountDialog());
+    try {
+        await createTag(data).unwrap()
+        toast.success("Tag created");
+      } catch (error) {
+        console.log(error);
+        toast.error(error.data.detail);
+      }
+      setName("");
+      setColor("");
+      dispatch(closeAddTagDialog());
   }
 
   return (
     <div>
+      
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add Account</DialogTitle>
+      
+        <DialogTitle>Add Tag</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Add an account to use with your budget.
+            Add a tag to use your budget.
           </DialogContentText>
           <TextField
             autoFocus
@@ -66,37 +73,28 @@ export default function AddAccountDialog() {
           />
           <TextField
             margin="dense"
-            id="amount"
-            value={amount}
-            label="Amount"
-            type="number"
-            fullWidth
-            variant="outlined"
-            required
-            InputProps={{
-              endAdornment: <InputAdornment position="end">PLN</InputAdornment>
-            }}
-            onChange={(event) => {
-              setAmount(event.target.value);
-            }}
-          />
-          <TextField
-            margin="dense"
-            id="type"
-            value={type}
-            label="Type"
+            id="color"
+            value={color}
+            label="Color"
             type="text"
             fullWidth
             variant="outlined"
             required
             onChange={(event) => {
-              setType(event.target.value);
+              setColor(event.target.value);
             }}
+            InputProps={{
+                endAdornment: <InputAdornment position="end">
+                    <IconButton onClick={() => setColorPicker(true)}>
+                      <PaletteIcon color="inherit"></PaletteIcon>
+                    </IconButton>
+                </InputAdornment>
+              }}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} variant="contained">Cancel</Button>
-          <Button onClick={handleAddAccount} variant="contained">Add</Button>
+          <Button onClick={handleAddTag} variant="contained">Add</Button>
         </DialogActions>
       </Dialog>
     </div>

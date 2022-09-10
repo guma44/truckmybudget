@@ -8,6 +8,8 @@ import EditExpenseDialog from '../../components/EditExpenseDialog';
 import MuiAlert from '@mui/material/Alert';
 import Accounts from '../../components/Accounts';
 import AddAccountDialog from '../../components/AddAccountDialog';
+import AddGroupDialog from '../../components/AddGroupDialog';
+import AddTagDialog from '../../components/AddTagDialog';
 
 const StyledPaper = styled(Paper)`
   width: 90%;
@@ -30,12 +32,16 @@ const HomeView = () => {
   const isCreateDialogOpen = useSelector((state) => state.expenseDialog.isOpen);
   const { isOpen: isEditDialogOpen, expense: expenseToEdit } = useSelector((state) => state.editExpenseDialog);
   const isAddAccountDialogOpen = useSelector((state) => state.accountDialog.isOpen);
+  const isAddGroupDialogOpen = useSelector((state) => state.groupDialog.isOpen);
+  const isAddTagDialogOpen = useSelector((state) => state.tagDialog.isOpen);
 
   return (
     <StyledPaper elevation={0}>
       <CreateExpenseDialog isOpen={isCreateDialogOpen} />
       {isEditDialogOpen && expenseToEdit && <EditExpenseDialog isOpen={isEditDialogOpen} initialExpense={expenseToEdit}/>}
       {isAddAccountDialogOpen && <AddAccountDialog />}
+      {isAddGroupDialogOpen && <AddGroupDialog />}
+      {isAddTagDialogOpen && <AddTagDialog />}
       <Accounts></Accounts>
       <ExpanseTable></ExpanseTable>
     </StyledPaper>

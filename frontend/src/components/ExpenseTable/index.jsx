@@ -18,9 +18,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useDispatch } from 'react-redux';
 import { openExpenseDialog } from '../../redux/features/expenseDialogSlice';
+import { openAddGroupDialog } from '../../redux/features/groupsDialogSlice';
+import { openAddTagDialog } from '../../redux/features/tagsDialogSlice';
 import { useGetExpensesQuery, useDeleteExpenseMutation } from '../../redux/api/expensesApi'
 import { openEditExpenseDialog } from '../../redux/features/editExpenseDialogSlice';
 import { toast } from 'react-toastify';
+import { Stack } from '@mui/system';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -145,8 +148,14 @@ const ExpenseTableToolbar = (props) => {
   const { selectedRow } = props;
   const dispatch = useDispatch();
 
-  const openDialogHandler = () => {
+  const openAddExpenseDialogHandler = () => {
     dispatch(openExpenseDialog());
+  }
+  const openAddGroupDialogHandler = () => {
+    dispatch(openAddGroupDialog());
+  }
+  const openAddTagDialogHandler = () => {
+    dispatch(openAddTagDialog());
   }
 
   return (
@@ -156,11 +165,23 @@ const ExpenseTableToolbar = (props) => {
         pr: { xs: 1, sm: 1 },
       }}
     >
+    <Stack direction="row" spacing={1}>
       <Tooltip title="Add Expense">
-        <Button color="primary" variant="contained" onClick={openDialogHandler}>
+        <Button color="primary" variant="contained" onClick={openAddExpenseDialogHandler}>
           <AddIcon /> Add Expense
         </Button>
       </Tooltip>
+      <Tooltip title="Add Group">
+        <Button color="secondary" variant="contained" onClick={openAddGroupDialogHandler}>
+          <AddIcon /> Add Group
+        </Button>
+      </Tooltip>
+      <Tooltip title="Add Tag">
+        <Button color="secondary" variant="contained" onClick={openAddTagDialogHandler}>
+          <AddIcon /> Add Tag
+        </Button>
+      </Tooltip>
+      </Stack>
     </Toolbar>
   );
 };

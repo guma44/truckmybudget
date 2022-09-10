@@ -59,6 +59,8 @@ async def update_expense_data(id: PydanticObjectId, req: Expense) -> Expense:
             new_account_amount = account.amount - (req["price"] - expense.price)
         elif req["price"] < expense.price:
             new_account_amount = account.amount + (expense.price - req["price"])
+        else:
+            new_account_amount = req["price"]  # no change in price
         if new_account_amount < 0:
             raise HTTPException(
                 status_code=400,

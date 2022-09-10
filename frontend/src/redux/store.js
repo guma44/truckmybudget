@@ -3,6 +3,8 @@ import { setupListeners } from '@reduxjs/toolkit/query'
 import { TDBApi } from './api';
 import expenseDialogReducer from './features/expenseDialogSlice';
 import accountDialogReducer from './features/accountsDialogSlice';
+import groupDialogReducer from './features/groupsDialogSlice';
+import tagDialogReducer from './features/tagsDialogSlice';
 import editExpenseDialogReducer from './features/editExpenseDialogSlice';
 import { authApi } from './api/authApi';
 import { userApi } from './api/userApi';
@@ -17,6 +19,8 @@ import userReducer from './features/userSlice';
     user: userReducer,
     expenseDialog: expenseDialogReducer,
     accountDialog: accountDialogReducer,
+    groupDialog: groupDialogReducer,
+    tagDialog: tagDialogReducer,
     editExpenseDialog: editExpenseDialogReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
