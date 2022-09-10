@@ -16,6 +16,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete'
+import { useConfirm } from 'material-ui-confirm';
 import { useDispatch } from 'react-redux';
 import { openExpenseDialog } from '../../redux/features/expenseDialogSlice';
 import { openAddGroupDialog } from '../../redux/features/groupsDialogSlice';
@@ -187,6 +188,7 @@ const ExpenseTableToolbar = (props) => {
 };
 
 export default function ExpenseTable() {
+  const confirm = useConfirm();
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('date');
   const [selected, setSelected] = React.useState("");
@@ -213,7 +215,15 @@ export default function ExpenseTable() {
   }
 
   const handleDeleteExpense = (event, expense) => {
-    deleteExpense(expense._id).unwrap()
+    confirm({
+      title: "Delete expense",
+      description: "Are you sure?",
+      confirmationButtonProps: {variant: "contained"},
+      cancellationButtonProps: {variant: "contained"},
+    })
+      .then(() => {
+        return deleteExpense(expense._id).unwrap()
+      })
       .then((response) => {
         toast.success("Expense deleted");
       })

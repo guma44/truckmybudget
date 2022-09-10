@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Routes, Route } from 'react-router-dom';
+import { ConfirmProvider } from 'material-ui-confirm';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -34,7 +35,10 @@ const App = () => {
 
   return (
       <ThemeProvider theme={theme}>
-        <>
+        <ConfirmProvider
+          confirmationButtonProps={{variant: "outlined"}}
+          cancelationButtonProps={{variant: "outlined"}}
+        >
           <ToastContainer
             autoClose={1000}
             hideProgressBar={true}
@@ -48,7 +52,7 @@ const App = () => {
             <Route exact path="/login" element={<LoginContainer/>} />
             <Route path="*" element={<NotFound/>} />
           </Routes>
-        </>
+        </ConfirmProvider>
       </ThemeProvider>
   );
 };
