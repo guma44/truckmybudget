@@ -9,6 +9,7 @@ import Header from './components/Header';
 import RequireUser from './components/RequireUser';
 import NotFound from './pages/NotFound';
 import HomeContainer from './pages/Home';
+import UtilsContainer from './pages/Utils';
 import LoginContainer from './pages/Login';
 
 import * as Paths from './paths';
@@ -49,7 +50,10 @@ const App = () => {
             <Route element={<RequireUser allowedRoles={['user', 'admin']} />}>
               <Route exact path={Paths.HOME} element={<HomeContainer/>} />
             </Route>
-            <Route exact path="/login" element={<LoginContainer/>} />
+            <Route element={<RequireUser allowedRoles={['user', 'admin']} />}>
+              <Route exact path={Paths.UTILS} element={<UtilsContainer/>} />
+            </Route>
+            <Route exact path={Paths.LOGIN} element={<LoginContainer/>} />
             <Route path="*" element={<NotFound/>} />
           </Routes>
         </ConfirmProvider>

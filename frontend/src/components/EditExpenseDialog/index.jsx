@@ -120,7 +120,13 @@ export default function FormDialog(props) {
         group: group ? group._id : null,
         account: account._id
       };
-      updateExpense({id: expenseId, expense: data})
+      updateExpense({id: expenseId, expense: data}).unwrap()
+        .then(response => {
+          toast.success("Expense updated");
+        })
+        .catch(function (error) {
+          toast.error(error.data.detail);
+        });
     }
     setDate(null);
     setName("");
