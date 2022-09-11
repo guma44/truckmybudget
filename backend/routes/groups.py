@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException
 from typing import List
 
 from models.groups import Group
+from models.expenses import Expense
 
 
 router = APIRouter()
@@ -47,7 +48,18 @@ async def update_group_data(id: PydanticObjectId, req: Group) -> Group:
 @router.delete("/{id}", response_description="Group record deleted from the database")
 async def delete_group_data(id: PydanticObjectId) -> dict:
     record = await Group.get(id)
-
+    expenses = await Expense.find(Expense.group.id == id).to_list()
+    num_expenses = len(expenses)
+    if num_expenses == 1:
+        raise HTTPException(
+            status_code=400,
+            detail=f"{num_expenses} expense uses this group"
+        )
+    elif num_expenses > 1:
+        raise HTTPException(
+            status_code=400,
+            detail=f"{num_expenses} expenses use this group"
+        )
     if not record:
         raise HTTPException(
             status_code=404,

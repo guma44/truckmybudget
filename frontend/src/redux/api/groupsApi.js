@@ -14,6 +14,17 @@ export const groupsApi = TDBApi.injectEndpoints({
       },
       invalidatesTags: [{ type: 'Groups', id: 'LIST' }]
     }),
+    updateGroup: builder.mutation({
+      query({id, group}) {
+        return {
+          url: `/groups/${id}`,
+          method: 'PUT',
+          // credentials: 'include',
+          body: group,
+        };
+      },
+      invalidatesTags: [{ type: 'Groups', id: 'LIST' }, {type: "Expenses", id: "LIST"}]
+    }),
     getGroups: builder.query({
       query() {
         return {
@@ -37,6 +48,7 @@ export const groupsApi = TDBApi.injectEndpoints({
 
 export const {
   useCreateGroupMutation,
+  useUpdateGroupMutation,
   useGetGroupsQuery,
   useDeleteGroupMutation
 } = groupsApi

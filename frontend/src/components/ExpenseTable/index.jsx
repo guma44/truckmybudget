@@ -25,6 +25,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import { visuallyHidden } from '@mui/utils';
 import { toast } from 'react-toastify';
+import { useConfirm } from 'material-ui-confirm';
 
 import { openExpenseDialog } from '../../redux/features/expenseDialogSlice';
 import { useGetExpensesQuery, useDeleteExpenseMutation } from '../../redux/api/expensesApi'
@@ -215,6 +216,7 @@ const EnhancedTableToolbar = (props) => {
 
 
 export default function EnhancedTable() {
+  const confirm = useConfirm();
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('date');
   const [selected, setSelected] = React.useState([]);
@@ -268,7 +270,15 @@ export default function EnhancedTable() {
   }
 
   const handleDeleteExpense = (event, expense) => {
-    deleteExpense(expense._id).unwrap()
+    confirm({
+      title: "Delete expense",
+      description: "Are you sure?",
+      confirmationButtonProps: {variant: "contained"},
+      cancellationButtonProps: {variant: "contained"},
+    })
+      .then(() => {
+        return deleteExpense(expense._id).unwrap()
+      })
       .then((response) => {
         toast.success("Expense deleted");
       })
@@ -276,6 +286,7 @@ export default function EnhancedTable() {
         toast.error(error.data.detail);
       })
   }
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);

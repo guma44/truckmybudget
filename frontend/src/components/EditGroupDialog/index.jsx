@@ -10,53 +10,54 @@ import { toast } from 'react-toastify';
 // import { SketchPicker } from 'react-color';
 import { useDispatch } from 'react-redux';
 import PaletteIcon from '@mui/icons-material/Palette';
-import { closeAddTagDialog } from '../../redux/features/tagsDialogSlice';
-import { useCreateTagMutation } from '../../redux/api/tagsApi';
+import { closeEditGroupDialog } from '../../redux/features/editGroupDialogSlice';
+import { useUpdateGroupMutation } from '../../redux/api/groupsApi';
 import { InputAdornment } from '@material-ui/core';
-import { IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 
 
-export default function AddTagDialog() {
-  const [name, setName] = React.useState("");
-  const [color, setColor] = React.useState("");
+export default function UpdateGroupDialog(props) {
+  const { initialGroup, isOpen } = props
+  const groupId = initialGroup._id;
+  const [name, setName] = React.useState(initialGroup.name);
+  const [color, setColor] = React.useState(initialGroup.color);
   const [ colorPicker, setColorPicker ] = React.useState(false);
-  const open = true;
 
-  const [ createTag ] = useCreateTagMutation();
+  const [ updateGroup ] = useUpdateGroupMutation();
   const dispatch = useDispatch();
 
   const handleClose = () => {
-    dispatch(closeAddTagDialog());
+    dispatch(closeEditGroupDialog());
     setName("");
     setColor(0);
   };
 
-  const handleAddTag = async () => {
+  const handleUpdateGroup = async () => {
     const data = {
       name: name,
       color: color
     };
     try {
-        await createTag(data).unwrap()
-        toast.success("Tag created");
+        await updateGroup({id: groupId, group: data}).unwrap()
+        toast.success("Group created");
       } catch (error) {
         console.log(error);
         toast.error(error.data.detail);
       }
       setName("");
       setColor("");
-      dispatch(closeAddTagDialog());
+      dispatch(closeEditGroupDialog());
   }
 
   return (
     <div>
       
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={isOpen} onClose={handleClose}>
       
-        <DialogTitle>Add Tag</DialogTitle>
+        <DialogTitle>Update Group</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Add a tag to use your budget.
+            Update a group to use your budget.
           </DialogContentText>
           <TextField
             autoFocus
@@ -85,7 +86,11 @@ export default function AddTagDialog() {
               setColor(event.target.value);
             }}
             InputProps={{
-                endAdornment: <InputAdornment position="end">
+                endAdornment:
+                <InputAdornment position="end">
+                    <Box width="2em" sx={{backgroundColor: color}}>
+                        COL
+                    </Box>
                     <IconButton onClick={() => setColorPicker(true)}>
                       <PaletteIcon color="inherit"></PaletteIcon>
                     </IconButton>
@@ -95,7 +100,7 @@ export default function AddTagDialog() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} variant="contained">Cancel</Button>
-          <Button onClick={handleAddTag} variant="contained">Add</Button>
+          <Button onClick={handleUpdateGroup} variant="contained">Update</Button>
         </DialogActions>
       </Dialog>
     </div>

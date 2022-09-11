@@ -10,34 +10,35 @@ import { toast } from 'react-toastify';
 // import { SketchPicker } from 'react-color';
 import { useDispatch } from 'react-redux';
 import PaletteIcon from '@mui/icons-material/Palette';
-import { closeAddTagDialog } from '../../redux/features/tagsDialogSlice';
-import { useCreateTagMutation } from '../../redux/api/tagsApi';
+import { closeEditTagDialog } from '../../redux/features/editTagDialogSlice';
+import { useUpdateTagMutation } from '../../redux/api/tagsApi';
 import { InputAdornment } from '@material-ui/core';
-import { IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 
 
-export default function AddTagDialog() {
-  const [name, setName] = React.useState("");
-  const [color, setColor] = React.useState("");
+export default function UpdateTagDialog(props) {
+  const { initialTag, isOpen } = props
+  const tagId = initialTag._id;
+  const [name, setName] = React.useState(initialTag.name);
+  const [color, setColor] = React.useState(initialTag.color);
   const [ colorPicker, setColorPicker ] = React.useState(false);
-  const open = true;
 
-  const [ createTag ] = useCreateTagMutation();
+  const [ updateTag ] = useUpdateTagMutation();
   const dispatch = useDispatch();
 
   const handleClose = () => {
-    dispatch(closeAddTagDialog());
+    dispatch(closeEditTagDialog());
     setName("");
     setColor(0);
   };
 
-  const handleAddTag = async () => {
+  const handleUpdateTag = async () => {
     const data = {
       name: name,
       color: color
     };
     try {
-        await createTag(data).unwrap()
+        await updateTag({id: tagId, tag: data}).unwrap()
         toast.success("Tag created");
       } catch (error) {
         console.log(error);
@@ -45,18 +46,18 @@ export default function AddTagDialog() {
       }
       setName("");
       setColor("");
-      dispatch(closeAddTagDialog());
+      dispatch(closeEditTagDialog());
   }
 
   return (
     <div>
       
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={isOpen} onClose={handleClose}>
       
-        <DialogTitle>Add Tag</DialogTitle>
+        <DialogTitle>Update Tag</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Add a tag to use your budget.
+            Update a tag to use your budget.
           </DialogContentText>
           <TextField
             autoFocus
@@ -85,7 +86,11 @@ export default function AddTagDialog() {
               setColor(event.target.value);
             }}
             InputProps={{
-                endAdornment: <InputAdornment position="end">
+                endAdornment:
+                <InputAdornment position="end">
+                    <Box width="2em" sx={{backgroundColor: color}}>
+                        COL
+                    </Box>
                     <IconButton onClick={() => setColorPicker(true)}>
                       <PaletteIcon color="inherit"></PaletteIcon>
                     </IconButton>
@@ -95,7 +100,7 @@ export default function AddTagDialog() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} variant="contained">Cancel</Button>
-          <Button onClick={handleAddTag} variant="contained">Add</Button>
+          <Button onClick={handleUpdateTag} variant="contained">Update</Button>
         </DialogActions>
       </Dialog>
     </div>

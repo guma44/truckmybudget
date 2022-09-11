@@ -46,7 +46,7 @@ export default function AddGroupDialog() {
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={true} onClose={handleClose}>
         <DialogTitle>Add Group</DialogTitle>
         <DialogContent>
           <DialogContentText>

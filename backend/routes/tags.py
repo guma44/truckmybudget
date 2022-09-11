@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException
 from typing import List
 
 from models.tags import Tag
+from models.expenses import Expense
 
 
 router = APIRouter()
@@ -47,7 +48,18 @@ async def update_tag_data(id: PydanticObjectId, req: Tag) -> Tag:
 @router.delete("/{id}", response_description="Tag record deleted from the database")
 async def delete_tag_data(id: PydanticObjectId) -> dict:
     record = await Tag.get(id)
-
+    expenses = await Expense.find(Expense.tags.id == id).to_list()
+    num_expenses = len(expenses)
+    if num_expenses == 1:
+        raise HTTPException(
+            status_code=400,
+            detail=f"{num_expenses} expense uses this tag"
+        )
+    elif num_expenses > 1:
+        raise HTTPException(
+            status_code=400,
+            detail=f"{num_expenses} expenses use this tag"
+        )
     if not record:
         raise HTTPException(
             status_code=404,

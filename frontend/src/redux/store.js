@@ -6,6 +6,8 @@ import accountDialogReducer from './features/accountsDialogSlice';
 import groupDialogReducer from './features/groupsDialogSlice';
 import tagDialogReducer from './features/tagsDialogSlice';
 import editExpenseDialogReducer from './features/editExpenseDialogSlice';
+import editTagDialogReducer from './features/editTagDialogSlice';
+import editGroupDialogReducer from './features/editGroupDialogSlice';
 import { authApi } from './api/authApi';
 import { userApi } from './api/userApi';
 import userReducer from './features/userSlice';
@@ -22,6 +24,8 @@ import userReducer from './features/userSlice';
     groupDialog: groupDialogReducer,
     tagDialog: tagDialogReducer,
     editExpenseDialog: editExpenseDialogReducer,
+    editTagDialog: editTagDialogReducer,
+    editGroupDialog: editGroupDialogReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
   preloadedState,

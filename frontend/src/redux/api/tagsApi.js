@@ -23,6 +23,17 @@ export const tagsApi = TDBApi.injectEndpoints({
             },
             providesTags: [{ type: 'Tags', id: 'LIST' }]
         }),
+        updateTag: builder.mutation({
+            query({id, tag}) {
+              return {
+                url: `/tags/${id}`,
+                method: 'PUT',
+                // credentials: 'include',
+                body: tag,
+              };
+            },
+            invalidatesTags: [{ type: 'Tags', id: 'LIST' }, {type: "Expenses", id: "LIST"}]
+          }),
         deleteTag: builder.mutation({
             query(id) {
                 return {
@@ -37,6 +48,7 @@ export const tagsApi = TDBApi.injectEndpoints({
 
 export const {
     useCreateTagMutation,
+    useUpdateTagMutation,
     useGetTagsQuery,
     useDeleteTagMutation
 } = tagsApi
