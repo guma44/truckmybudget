@@ -1,11 +1,12 @@
 from beanie import PydanticObjectId
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Optional
 import datetime
 import uuid
 import os
 
-from models.expenses import Expense
+from models.expenses import Expense, CreateExpense, ReadExpense, UpdateExpense
+from models.users import current_active_user
 from models.accounts import Account
 
 
@@ -14,7 +15,7 @@ router = APIRouter()
 
 
 @router.post("/", response_description="Expense added to the database")
-async def add_expense(expense: Expense) -> Expense:
+async def add_expense(expense: CreateExpense, user=Depends(current_active_user)) -> ReadExpense:
     account = await expense.account.fetch()
     new_account_amount = account.amount - expense.price
     if new_account_amount < 0:
@@ -22,25 +23,29 @@ async def add_expense(expense: Expense) -> Expense:
             status_code=400,
             detail="Not enough money on account"
         )
-    await expense.create()
+    expense_data = expense.dict()
+    expense_data["user"] = user.id
+    print(expense_data)
+    new_expense = Expense(**expense_data)
+    await new_expense.create()
     await account.update({"$set": {"amount": new_account_amount}})
-    return expense
+    return new_expense
 
 
 @router.get("/{id}", response_description="Expense record retrieved")
-async def get_expense_record(id: PydanticObjectId) -> Expense:
+async def get_expense_record(id: PydanticObjectId, user=Depends(current_active_user)) -> ReadExpense:
     expense = await Expense.get(id, fetch_links=True)
     return expense
 
 
 @router.get("/", response_description="Expense records retrieved")
-async def get_expenses() -> List[Expense]:
+async def get_expenses(user=Depends(current_active_user)) -> List[ReadExpense]:
     expenses = await Expense.find_all(fetch_links=True).to_list()
     return expenses
 
 
 @router.put("/{id}", response_description="Expense record updated")
-async def update_expense_data(id: PydanticObjectId, req: Expense) -> Expense:
+async def update_expense_data(id: PydanticObjectId, req: UpdateExpense, user=Depends(current_active_user)) -> ReadExpense:
     req = {k: v for k, v in req.dict().items() if v is not None}
     update_query = {"$set": {
         field: value for field, value in req.items()
@@ -73,7 +78,7 @@ async def update_expense_data(id: PydanticObjectId, req: Expense) -> Expense:
 
 
 @router.delete("/{id}", response_description="Expense record deleted from the database")
-async def delete_expense_data(id: PydanticObjectId) -> dict:
+async def delete_expense_data(id: PydanticObjectId, user=Depends(current_active_user)) -> dict:
     record = await Expense.get(id)
     if not record:
         raise HTTPException(status_code=404, detail="Expense record not found!")

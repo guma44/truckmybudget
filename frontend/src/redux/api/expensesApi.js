@@ -8,7 +8,7 @@ export const expensesApi = TDBApi.injectEndpoints({
         return {
           url: '/expenses',
           method: 'POST',
-          // credentials: 'include',
+          credentials: 'include',
           body: expense,
         };
       },
@@ -19,7 +19,7 @@ export const expensesApi = TDBApi.injectEndpoints({
         return {
           url: `/expenses/${id}`,
           method: 'PUT',
-          // credentials: 'include',
+          credentials: 'include',
           body: expense,
         };
       },
@@ -29,7 +29,7 @@ export const expensesApi = TDBApi.injectEndpoints({
       query() {
         return {
           url: `/expenses`,
-          // credentials: 'include',
+          credentials: 'include',
         };
       },
       providesTags:  [{ type: 'Expenses', id: 'LIST' }]
@@ -38,7 +38,8 @@ export const expensesApi = TDBApi.injectEndpoints({
       query(id) {
         return {
           url: `/expenses/${id}`,
-          method: "DELETE"
+          method: "DELETE",
+          credentials: 'include',
         };
       },
       invalidatesTags: [{ type: "Expenses", id: "LIST"}, {type: "Accounts", id: "LIST"}]

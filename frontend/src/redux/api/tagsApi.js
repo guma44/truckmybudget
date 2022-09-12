@@ -8,7 +8,7 @@ export const tagsApi = TDBApi.injectEndpoints({
                 return {
                     url: '/tags',
                     method: 'POST',
-                    // credentials: 'include',
+                    credentials: 'include',
                     body: tag,
                 };
             },
@@ -18,7 +18,7 @@ export const tagsApi = TDBApi.injectEndpoints({
             query() {
                 return {
                     url: `/tags`,
-                    // credentials: 'include',
+                    credentials: 'include',
                 };
             },
             providesTags: [{ type: 'Tags', id: 'LIST' }]
@@ -28,7 +28,7 @@ export const tagsApi = TDBApi.injectEndpoints({
               return {
                 url: `/tags/${id}`,
                 method: 'PUT',
-                // credentials: 'include',
+                credentials: 'include',
                 body: tag,
               };
             },
@@ -38,6 +38,7 @@ export const tagsApi = TDBApi.injectEndpoints({
             query(id) {
                 return {
                     url: `/tags/${id}`,
+                    credentials: 'include',
                     method: "DELETE"
                 };
             },

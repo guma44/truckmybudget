@@ -29,9 +29,11 @@ import { useConfirm } from 'material-ui-confirm';
 
 import { openExpenseDialog } from '../../redux/features/expenseDialogSlice';
 import { useGetExpensesQuery, useDeleteExpenseMutation } from '../../redux/api/expensesApi'
+import { useDownloadInvoiceQuery } from '../../redux/api/invoicesApi';
 import { openEditExpenseDialog } from '../../redux/features/editExpenseDialogSlice';
 import { openAddGroupDialog } from '../../redux/features/groupsDialogSlice';
 import { openAddTagDialog } from '../../redux/features/tagsDialogSlice';
+import { DownloadFile } from '../DownloadFile';
 import { Button, Chip } from '@mui/material';
 import { Stack } from '@mui/system';
 
@@ -90,6 +92,12 @@ const headCells = [
     numeric: false,
     disablePadding: false,
     label: "Date"
+  },
+  {
+    id: "account",
+    numeric: false,
+    disablePadding: false,
+    label: "Account"
   },
   {
     id: "description",
@@ -227,6 +235,7 @@ export default function EnhancedTable() {
     data: rows,
     isLoading
   } = useGetExpensesQuery();
+  // const {data: file} = useDownloadInvoiceQuery();
   const [ deleteExpense ] = useDeleteExpenseMutation();
   const dispatch = useDispatch();
 
@@ -331,6 +340,7 @@ export default function EnhancedTable() {
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
+                  console.log(row);
                   const isItemSelected = isSelected(row.name);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -341,7 +351,7 @@ export default function EnhancedTable() {
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.name}
+                      key={row._id}
                       selected={isItemSelected}
                     >
                       {/* <TableCell padding="checkbox">
@@ -365,6 +375,7 @@ export default function EnhancedTable() {
                       <TableCell align="left">{row.name}</TableCell>
                       <TableCell align="left">{row.price}</TableCell>
                       <TableCell align="left">{row.date}</TableCell>
+                      <TableCell align="left">{row.account.name}</TableCell>
                       <TableCell align="left">{row.description}</TableCell>
                       <TableCell align="left">{(
                         row.tags ? row.tags.map((tag) => {
@@ -377,7 +388,7 @@ export default function EnhancedTable() {
                         }) : "")
                       }</TableCell>
                       <TableCell align="left">{(
-                        row.invoice ? <Button><DownloadIcon/></Button> : ""
+                        row.invoice ? <DownloadFile path={row.invoice.path} filename={row.invoice.name}/> : ""
                         )}
                       </TableCell>
 

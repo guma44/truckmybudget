@@ -1,34 +1,35 @@
 from beanie import PydanticObjectId
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 
 from models.groups import Group
 from models.expenses import Expense
+from models.users import current_active_user
 
 
 router = APIRouter()
 
 
 @router.post("/", response_description="Group added to the database")
-async def add_group(group: Group) -> dict:
+async def add_group(group: Group, user=Depends(current_active_user)) -> dict:
     await group.create()
     return {"message": "Group added successfully"}
 
 
 @router.get("/{id}", response_description="Group record retrieved")
-async def get_group_record(id: PydanticObjectId) -> Group:
+async def get_group_record(id: PydanticObjectId, user=Depends(current_active_user)) -> Group:
     group = await Group.get(id)
     return group
 
 
 @router.get("/", response_description="Group records retrieved")
-async def get_groups() -> List[Group]:
+async def get_groups(user=Depends(current_active_user)) -> List[Group]:
     groups = await Group.find_all().to_list()
     return groups
 
 
 @router.put("/{id}", response_description="Group record updated")
-async def update_group_data(id: PydanticObjectId, req: Group) -> Group:
+async def update_group_data(id: PydanticObjectId, req: Group, user=Depends(current_active_user)) -> Group:
     req = {k: v for k, v in req.dict().items() if v is not None}
     update_query = {"$set": {
         field: value for field, value in req.items()
@@ -46,7 +47,7 @@ async def update_group_data(id: PydanticObjectId, req: Group) -> Group:
 
 
 @router.delete("/{id}", response_description="Group record deleted from the database")
-async def delete_group_data(id: PydanticObjectId) -> dict:
+async def delete_group_data(id: PydanticObjectId, user=Depends(current_active_user)) -> dict:
     record = await Group.get(id)
     expenses = await Expense.find(Expense.group.id == id).to_list()
     num_expenses = len(expenses)

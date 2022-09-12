@@ -8,7 +8,7 @@ export const groupsApi = TDBApi.injectEndpoints({
         return {
           url: '/groups',
           method: 'POST',
-          // credentials: 'include',
+          credentials: 'include',
           body: group,
         };
       },
@@ -19,7 +19,7 @@ export const groupsApi = TDBApi.injectEndpoints({
         return {
           url: `/groups/${id}`,
           method: 'PUT',
-          // credentials: 'include',
+          credentials: 'include',
           body: group,
         };
       },
@@ -29,7 +29,7 @@ export const groupsApi = TDBApi.injectEndpoints({
       query() {
         return {
           url: `/groups`,
-          // credentials: 'include',
+          credentials: 'include',
         };
       },
       providesTags:  [{ type: 'Groups', id: 'LIST' }]
@@ -38,6 +38,7 @@ export const groupsApi = TDBApi.injectEndpoints({
       query(id) {
         return {
           url: `/groups/${id}`,
+          credentials: 'include',
           method: "DELETE"
         };
       },

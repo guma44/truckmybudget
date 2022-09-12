@@ -10,8 +10,8 @@ export const accountsApi = TDBApi.injectEndpoints({
         return {
           url: '/accounts',
           method: 'POST',
-          // credentials: 'include',
           body: formData,
+          credentials: 'include',
         };
       },
       invalidatesTags: [{ type: 'Accounts', id: 'LIST' }]
@@ -20,7 +20,7 @@ export const accountsApi = TDBApi.injectEndpoints({
       query() {
         return {
           url: `/accounts`,
-          // credentials: 'include',
+          credentials: 'include',
         };
       },
       providesTags:  [{ type: 'Accounts', id: 'LIST' }]
@@ -29,7 +29,8 @@ export const accountsApi = TDBApi.injectEndpoints({
       query(id) {
         return {
           url: `/accounts/${id}`,
-          method: "DELETE"
+          method: "DELETE",
+          credentials: 'include',
         };
       },
       invalidatesTags: [{ type: "Accounts", id: "LIST"}]

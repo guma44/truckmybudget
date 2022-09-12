@@ -8,6 +8,7 @@ from models.invoices import Invoice
 from models.groups import Group
 from models.accounts import Account
 from models.tags import Tag
+from models.users import User
 
 
 class Expense(Document):
@@ -19,6 +20,7 @@ class Expense(Document):
     tags: List[Link[Tag]] = []
     group: Optional[Link[Group]]
     account: Link[Account]
+    user: Link[User]
 
     class Settings:
         name = "expenses"
@@ -28,6 +30,15 @@ class Expense(Document):
             )
         }
 
+class CreateExpense(BaseModel):
+    name: str
+    price: float
+    date: datetime.date
+    invoice: Optional[Link[Invoice]]
+    description: Optional[str]
+    tags: List[Link[Tag]] = []
+    group: Optional[Link[Group]]
+    account: Link[Account]
     class Config:
         schema_extra = {
             "example": {
@@ -41,12 +52,14 @@ class Expense(Document):
             }
         }
 
+class ReadExpense(CreateExpense):
+    ...
 
 class UpdateExpense(BaseModel):
     name: Optional[str]
     price: Optional[float]
     date: Optional[datetime.date]
-    invoice: Optional[str] = None
+    invoice: Optional[Link[Invoice]] = None
     description: Optional[str]
     tags: Optional[List[Link[Tag]]]
     group: Optional[Link[Group]]

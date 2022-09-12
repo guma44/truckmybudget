@@ -9,7 +9,7 @@ export const invoicesApi = TDBApi.injectEndpoints({
         return {
           url: '/invoices',
           method: 'POST',
-          // credentials: 'include',
+          credentials: 'include',
           body: formData,
         //  headers: { "Content-Type": "multipart/form-data" },
         };
@@ -20,7 +20,16 @@ export const invoicesApi = TDBApi.injectEndpoints({
       query() {
         return {
           url: `/invoices`,
-          // credentials: 'include',
+          credentials: 'include',
+        };
+      },
+      providesTags:  [{ type: 'Invoices', id: 'LIST' }]
+    }),
+    downloadInvoice: builder.query({
+      query(id) {
+        return {
+          url: `/invoices/${id}/download`,
+          credentials: 'include',
         };
       },
       providesTags:  [{ type: 'Invoices', id: 'LIST' }]
@@ -29,6 +38,7 @@ export const invoicesApi = TDBApi.injectEndpoints({
 })
 
 export const {
+  useDownloadInvoiceQuery,
   useCreateInvoiceMutation,
   useGetInvoicesQuery,
 } = invoicesApi
