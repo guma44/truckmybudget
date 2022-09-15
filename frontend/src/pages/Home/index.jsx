@@ -2,7 +2,6 @@ import { forwardRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import Paper from '@mui/material/Paper';
-import ExpanseTable from '../../components/ExpenseTable';
 import CreateExpenseDialog from '../../components/CreateExpenseDialog';
 import EditExpenseDialog from '../../components/EditExpenseDialog';
 
@@ -10,11 +9,14 @@ import Accounts from '../../components/Accounts';
 import AddAccountDialog from '../../components/AddAccountDialog';
 import AddGroupDialog from '../../components/AddGroupDialog';
 import AddTagDialog from '../../components/AddTagDialog';
+import ExpensesGrid from '../../components/ExpensesGrid';
+import ExpenseTable from '../../components/ExpenseTable';
+import { isMobile } from 'react-device-detect';
 
 const StyledPaper = styled(Paper)`
-  width: 90%;
-  margin: 4rem auto;
-  padding: 2rem;
+  width: ${isMobile ? "100%" : "90%"};
+  margin: ${isMobile ? "0rem" : "4rem"} auto;
+  padding: ${isMobile ? "0rem" : "2rem"};
   background-color: #white;
 
   @media (min-width: 768px) {
@@ -39,7 +41,8 @@ const HomeView = () => {
       {isAddGroupDialogOpen && <AddGroupDialog />}
       {isAddTagDialogOpen && <AddTagDialog />}
       <Accounts></Accounts>
-      <ExpanseTable></ExpanseTable>
+      {isMobile ? <ExpensesGrid></ExpensesGrid> : <ExpenseTable></ExpenseTable>}
+      
     </StyledPaper>
   );
 };

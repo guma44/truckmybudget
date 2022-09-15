@@ -4,7 +4,7 @@ import { useCookies } from 'react-cookie';
 
 import DownloadIcon from '@mui/icons-material/Download';
 import { toast } from "react-toastify";
-import { Button } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 
 export const DownloadFile = (props) => {
   const { path, filename } = props;
@@ -40,7 +40,7 @@ export const DownloadFile = (props) => {
   return (
     <dev>
         <a href={url} download={name} className="hidden" ref={ref} />
-        <Button onClick={download}><DownloadIcon/></Button>
+        <IconButton onClick={download}><DownloadIcon/></IconButton>
     </dev>
   );
 };

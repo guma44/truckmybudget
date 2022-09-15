@@ -14,6 +14,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import { isMobile } from 'react-device-detect';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import { toast } from 'react-toastify';
 
@@ -92,14 +93,16 @@ function DrawerAppBar(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography
+          {!isMobile && <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+            sx={{ flexGrow: 1, display: 'block' }}
           >
             TMB
-          </Typography>
-          {user && <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+          </Typography>}
+          {user && !isMobile &&
+          
+          <Box>
             <Button
               key="home"
               sx={{ color: '#fff' }}

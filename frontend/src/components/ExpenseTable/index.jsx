@@ -18,14 +18,14 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import DownloadIcon from '@mui/icons-material/Download';
+import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
+import RedoIcon from '@mui/icons-material/Redo';
 import { visuallyHidden } from '@mui/utils';
 import { toast } from 'react-toastify';
-import RedoIcon from '@mui/icons-material/Redo';
 import { useConfirm } from 'material-ui-confirm';
 
 import { openExpenseDialog } from '../../redux/features/expenseDialogSlice';
@@ -233,7 +233,7 @@ export default function EnhancedTable() {
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const dense = true
-  const [rowsPerPage, setRowsPerPage] = React.useState(30);
+  const [rowsPerPage, setRowsPerPage] = React.useState(2);
   const {
     data: rows,
     isLoading
