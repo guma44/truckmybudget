@@ -41,7 +41,7 @@ export default function FormDialog(props) {
   const [account, setAccount] = React.useState(initialAccount || "");
   const [group, setGroup] = React.useState(initialGroup || "");
   const [tags, setTags] = React.useState(initialTags || []);
-  const [invoiceUrl, setInvoiceUrl] = React.useState(initialInvoiceUrl || []);
+  const [invoiceUrl, setInvoiceUrl] = React.useState(initialInvoiceUrl || null);
   const [description, setDescription] = React.useState(initialDescription || "");
   const [invoice, setInvoice] = React.useState(initialInvoice || null);
   const {data: preexistingTags, isTagsLoading} = useGetTagsQuery();
@@ -78,7 +78,7 @@ export default function FormDialog(props) {
     setTags([]);
     setDescription("");
     setInvoice(null);
-    setInvoiceUrl("");
+    setInvoiceUrl(null);
   };
 
   const handleAddExpense = () => {
@@ -125,7 +125,8 @@ export default function FormDialog(props) {
           handleClose();
         })
         .catch((error) => {
-          toast.error(error.data.detail);
+          console.log(error.data.detail[0]);
+          toast.error(JSON.stringify(error.data.detail));
         })
     }
 

@@ -37,7 +37,7 @@ async def get_expense_record(id: PydanticObjectId, user=Depends(current_active_u
     return expense
 
 
-@router.get("/", response_description="Expense records retrieved")
+@router.get("", response_description="Expense records retrieved")
 async def get_expenses(user=Depends(current_active_user)) -> List[ReadExpense]:
     expenses = await Expense.find_all(fetch_links=True).to_list()
     return expenses
@@ -64,7 +64,7 @@ async def update_expense_data(id: PydanticObjectId, req: UpdateExpense, user=Dep
         elif req["price"] < expense.price:
             new_account_amount = account.amount + (expense.price - req["price"])
         else:
-            new_account_amount = req["price"]  # no change in price
+            new_account_amount = account.amount  # no change in account amount
         if new_account_amount < 0:
             raise HTTPException(
                 status_code=400,

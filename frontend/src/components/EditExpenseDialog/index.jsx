@@ -68,7 +68,7 @@ export default function FormDialog(props) {
     setTags([]);
     setDescription("");
     setInvoice(null);
-    setInvoiceUrl("");
+    setInvoiceUrl(null);
   };
 
   const handleUpdateExpense = () => {
@@ -110,7 +110,7 @@ export default function FormDialog(props) {
             toast.success("Expense updated");
           })
           .catch(function (error) {
-            toast.error(error.data.detail);
+            toast.error(JSON.stringify(error.data.detail));
           });
       }
     }
@@ -130,7 +130,7 @@ export default function FormDialog(props) {
           toast.success("Expense updated");
         })
         .catch(function (error) {
-          toast.error(error.data.detail);
+          toast.error(JSON.stringify(error.data.detail));
         });
     }
     setDate(null);
@@ -140,7 +140,7 @@ export default function FormDialog(props) {
     setTags([]);
     setDescription("");
     setInvoice(null);
-    setInvoiceUrl("");
+    setInvoiceUrl(null);
     dispatch(closeEditExpenseDialog());
     
   }

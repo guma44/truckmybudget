@@ -35,6 +35,7 @@ import { openEditExpenseDialog } from '../../redux/features/editExpenseDialogSli
 import { openAddGroupDialog } from '../../redux/features/groupsDialogSlice';
 import { openAddTagDialog } from '../../redux/features/tagsDialogSlice';
 import { DownloadFile } from '../DownloadFile';
+import { formatMoney } from '../../utils/functions';
 import { Button, Chip, Link } from '@mui/material';
 import { Stack } from '@mui/system';
 
@@ -67,6 +68,11 @@ function stableSort(array, comparator) {
     return a[1] - b[1];
   });
   return stabilizedThis.map((el) => el[0]);
+}
+
+const calculateTotalPrice = (rows) => {
+  const total = rows.reduce((partialSum, row) => partialSum + row.price, 0);
+  return total
 }
 
 const headCells = [
@@ -174,7 +180,7 @@ function EnhancedTableHead(props) {
 }
 
 const EnhancedTableToolbar = (props) => {
-  const { numSelected } = props;
+  const { numSelected, totalPrice } = props;
   const dispatch = useDispatch();
 
   const openAddExpenseDialogHandler = () => {
@@ -214,11 +220,7 @@ const EnhancedTableToolbar = (props) => {
        </Button>
      </Tooltip>
     </Stack>
-    {/* <Tooltip title="Add expense">
-      <IconButton>
-        <AddIcon />
-      </IconButton>
-    </Tooltip> */}
+    <Typography variant='h5'>{formatMoney(totalPrice)}</Typography>
     </Toolbar>
   );
 };
@@ -231,7 +233,7 @@ export default function EnhancedTable() {
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const dense = true
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(30);
   const {
     data: rows,
     isLoading
@@ -320,7 +322,7 @@ export default function EnhancedTable() {
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar numSelected={selected.length} totalPrice={calculateTotalPrice(rows)}/>
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -412,7 +414,7 @@ export default function EnhancedTable() {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[10, 30, 50, 100]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}
