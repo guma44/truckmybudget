@@ -1,7 +1,7 @@
 from typing import Optional, List
 import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 from beanie import Document, Link
 
 from models.invoices import Invoice
@@ -16,6 +16,7 @@ class Expense(Document):
     price: float
     date: datetime.date
     invoice: Optional[Link[Invoice]]
+    invoice_url: Optional[HttpUrl]
     description: Optional[str]
     tags: List[Link[Tag]] = []
     group: Optional[Link[Group]]
@@ -35,6 +36,7 @@ class CreateExpense(BaseModel):
     price: float
     date: datetime.date
     invoice: Optional[Link[Invoice]]
+    invoice_url: Optional[HttpUrl]
     description: Optional[str]
     tags: List[Link[Tag]] = []
     group: Optional[Link[Group]]
@@ -60,6 +62,7 @@ class UpdateExpense(BaseModel):
     price: Optional[float]
     date: Optional[datetime.date]
     invoice: Optional[Link[Invoice]] = None
+    invoice_url: Optional[HttpUrl]
     description: Optional[str]
     tags: Optional[List[Link[Tag]]]
     group: Optional[Link[Group]]

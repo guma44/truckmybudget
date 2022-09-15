@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 
-@router.post("/", response_description="Expense added to the database")
+@router.post("", response_description="Expense added to the database")
 async def add_expense(expense: CreateExpense, user=Depends(current_active_user)) -> ReadExpense:
     account = await expense.account.fetch()
     new_account_amount = account.amount - expense.price
@@ -25,7 +25,6 @@ async def add_expense(expense: CreateExpense, user=Depends(current_active_user))
         )
     expense_data = expense.dict()
     expense_data["user"] = user.id
-    print(expense_data)
     new_expense = Expense(**expense_data)
     await new_expense.create()
     await account.update({"$set": {"amount": new_account_amount}})

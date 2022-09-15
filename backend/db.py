@@ -1,9 +1,10 @@
 import motor.motor_asyncio
-# from config.settings import settings
+from config.settings import settings
 
-
+print("Settings")
+print(settings)
 client = motor.motor_asyncio.AsyncIOMotorClient(
-    "mongodb://root:trackmybudget@db:27017",
+    settings.DB_URL,
     uuidRepresentation="standard")
 
 main_db = client.trackmybudget

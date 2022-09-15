@@ -14,6 +14,7 @@ import { closeEditTagDialog } from '../../redux/features/editTagDialogSlice';
 import { useUpdateTagMutation } from '../../redux/api/tagsApi';
 import { InputAdornment } from '@material-ui/core';
 import { Box, IconButton } from '@mui/material';
+import { ColorPicker } from 'mui-color';
 
 
 export default function UpdateTagDialog(props) {
@@ -29,8 +30,13 @@ export default function UpdateTagDialog(props) {
   const handleClose = () => {
     dispatch(closeEditTagDialog());
     setName("");
-    setColor(0);
+    setColor("");
   };
+
+  const handleSetColor = (color) => {
+    console.log(color);
+    setColor("#" + color);
+  }
 
   const handleUpdateTag = async () => {
     const data = {
@@ -39,7 +45,7 @@ export default function UpdateTagDialog(props) {
     };
     try {
         await updateTag({id: tagId, tag: data}).unwrap()
-        toast.success("Tag created");
+        toast.success(`Tag "${name}" updated`);
       } catch (error) {
         console.log(error);
         toast.error(error.data.detail);
@@ -73,29 +79,10 @@ export default function UpdateTagDialog(props) {
               setName(event.target.value);
             }}
           />
-          <TextField
-            margin="dense"
-            id="color"
+         <ColorPicker
             value={color}
-            label="Color"
-            type="text"
-            fullWidth
-            variant="outlined"
-            required
-            onChange={(event) => {
-              setColor(event.target.value);
-            }}
-            InputProps={{
-                endAdornment:
-                <InputAdornment position="end">
-                    <Box width="2em" sx={{backgroundColor: color}}>
-                        COL
-                    </Box>
-                    <IconButton onClick={() => setColorPicker(true)}>
-                      <PaletteIcon color="inherit"></PaletteIcon>
-                    </IconButton>
-                </InputAdornment>
-              }}
+            deferred={false}
+            onChange={(event) => handleSetColor(event.hex)}
           />
         </DialogContent>
         <DialogActions>

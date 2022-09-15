@@ -32,6 +32,7 @@ export default function FormDialog(props) {
     tags: initialTags,
     description: initialDescription,
     invoice: initialInvoice,
+    invoice_url: initialInvoiceUrl,
     isOpen
   } = props
   const [date, setDate] = React.useState(initialDate || null);
@@ -40,6 +41,7 @@ export default function FormDialog(props) {
   const [account, setAccount] = React.useState(initialAccount || "");
   const [group, setGroup] = React.useState(initialGroup || "");
   const [tags, setTags] = React.useState(initialTags || []);
+  const [invoiceUrl, setInvoiceUrl] = React.useState(initialInvoiceUrl || []);
   const [description, setDescription] = React.useState(initialDescription || "");
   const [invoice, setInvoice] = React.useState(initialInvoice || null);
   const {data: preexistingTags, isTagsLoading} = useGetTagsQuery();
@@ -76,6 +78,7 @@ export default function FormDialog(props) {
     setTags([]);
     setDescription("");
     setInvoice(null);
+    setInvoiceUrl("");
   };
 
   const handleAddExpense = () => {
@@ -92,7 +95,8 @@ export default function FormDialog(props) {
             tags: tags ? tags.map((item) => item._id) : null,
             group: group ? group._id : null,
             account: account._id,
-            invoice: response._id
+            invoice: response._id,
+            invoice_url: invoiceUrl
           };
           return createExpense(data).unwrap();
         })
@@ -112,7 +116,8 @@ export default function FormDialog(props) {
         description: description,
         tags: tags ? tags.map((item) => item._id) : null,
         group: group ? group._id : null,
-        account: account._id
+        account: account._id,
+        invoice_url: invoiceUrl
       };
       createExpense(data).unwrap()
         .then((response) => {
@@ -257,6 +262,18 @@ export default function FormDialog(props) {
             variant="outlined"
             onChange={(event) => {
               setDescription(event.target.value);
+            }}
+          />
+          <TextField
+            margin="dense"
+            id="invoiceUrl"
+            label="Invoice URL"
+            value={invoiceUrl}
+            type="url"
+            fullWidth
+            variant="outlined"
+            onChange={(event) => {
+              setInvoiceUrl(event.target.value);
             }}
           />
           <Stack>

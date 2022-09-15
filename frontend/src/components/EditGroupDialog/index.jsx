@@ -14,6 +14,7 @@ import { closeEditGroupDialog } from '../../redux/features/editGroupDialogSlice'
 import { useUpdateGroupMutation } from '../../redux/api/groupsApi';
 import { InputAdornment } from '@material-ui/core';
 import { Box, IconButton } from '@mui/material';
+import { ColorPicker } from 'mui-color';
 
 
 export default function UpdateGroupDialog(props) {
@@ -21,7 +22,6 @@ export default function UpdateGroupDialog(props) {
   const groupId = initialGroup._id;
   const [name, setName] = React.useState(initialGroup.name);
   const [color, setColor] = React.useState(initialGroup.color);
-  const [ colorPicker, setColorPicker ] = React.useState(false);
 
   const [ updateGroup ] = useUpdateGroupMutation();
   const dispatch = useDispatch();
@@ -29,8 +29,13 @@ export default function UpdateGroupDialog(props) {
   const handleClose = () => {
     dispatch(closeEditGroupDialog());
     setName("");
-    setColor(0);
+    setColor("");
   };
+
+  const handleSetColor = (color) => {
+    console.log(color);
+    setColor("#" + color);
+  }
 
   const handleUpdateGroup = async () => {
     const data = {
@@ -39,7 +44,7 @@ export default function UpdateGroupDialog(props) {
     };
     try {
         await updateGroup({id: groupId, group: data}).unwrap()
-        toast.success("Group created");
+        toast.success(`Group "${name}" updated`);
       } catch (error) {
         console.log(error);
         toast.error(error.data.detail);
@@ -73,29 +78,10 @@ export default function UpdateGroupDialog(props) {
               setName(event.target.value);
             }}
           />
-          <TextField
-            margin="dense"
-            id="color"
+          <ColorPicker
             value={color}
-            label="Color"
-            type="text"
-            fullWidth
-            variant="outlined"
-            required
-            onChange={(event) => {
-              setColor(event.target.value);
-            }}
-            InputProps={{
-                endAdornment:
-                <InputAdornment position="end">
-                    <Box width="2em" sx={{backgroundColor: color}}>
-                        COL
-                    </Box>
-                    <IconButton onClick={() => setColorPicker(true)}>
-                      <PaletteIcon color="inherit"></PaletteIcon>
-                    </IconButton>
-                </InputAdornment>
-              }}
+            deferred={false}
+            onChange={(event) => handleSetColor(event.hex)}
           />
         </DialogContent>
         <DialogActions>

@@ -1,7 +1,7 @@
 from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List
-from models.accounts import Account, AmendAccount
+from models.accounts import Account, CreateAccount, UpdateAccount, ReadAccount
 from models.users import current_active_user
 
 
@@ -9,26 +9,28 @@ router = APIRouter()
 
 
 
-@router.post("/", response_description="Account added to the database")
-async def add_account(account: Account, user=Depends(current_active_user)) -> Account:
-    await account.create()
-    return account
-
+@router.post("", response_description="Account added to the database")
+async def add_account(account: CreateAccount, user=Depends(current_active_user)) -> ReadAccount:
+    account_data = account.dict()
+    account_data["user"] = user.id
+    new_account = Account(**account_data)
+    await new_account.create()
+    return ReadAccount(**account.dict())
 
 @router.get("/{id}", response_description="Account record retrieved")
-async def get_account_record(id: PydanticObjectId, user=Depends(current_active_user)) -> Account:
+async def get_account_record(id: PydanticObjectId, user=Depends(current_active_user)) -> ReadAccount:
     account = await Account.get(id, fetch_links=True)
     return account
 
 
-@router.get("/", response_description="Account records retrieved")
-async def get_accounts(user=Depends(current_active_user)) -> List[Account]:
+@router.get("", response_description="Account records retrieved")
+async def get_accounts(user=Depends(current_active_user)) -> List[ReadAccount]:
     accounts = await Account.find_all(fetch_links=True).to_list()
     return accounts
 
 
 @router.put("/{id}", response_description="Account record updated")
-async def update_account_data(id: PydanticObjectId, req: Account, user=Depends(current_active_user)) -> Account:
+async def update_account_data(id: PydanticObjectId, req: UpdateAccount, user=Depends(current_active_user)) -> ReadAccount:
     req = {k: v for k, v in req.dict().items() if v is not None}
     update_query = {"$set": {
         field: value for field, value in req.items()

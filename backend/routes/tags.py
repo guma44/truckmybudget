@@ -2,7 +2,7 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 
-from models.tags import Tag
+from models.tags import Tag, CreateTag, UpdateTag, ReadTag
 from models.expenses import Expense
 from models.users import current_active_user
 
@@ -10,26 +10,29 @@ from models.users import current_active_user
 router = APIRouter()
 
 
-@router.post("/", response_description="Tag added to the database")
-async def add_tag(tag: Tag, user=Depends(current_active_user)) -> dict:
-    await tag.create()
-    return {"message": "Tag added successfully"}
+@router.post("", response_description="Tag added to the database")
+async def add_tag(tag: CreateTag, user=Depends(current_active_user)) -> ReadTag:
+    tag_data = tag.dict()
+    tag_data["user"] = user.id
+    new_tag = Tag(**tag_data)
+    await new_tag.create()
+    return ReadTag(**tag.dict())
 
 
 @router.get("/{id}", response_description="Tag record retrieved")
-async def get_tag_record(id: PydanticObjectId, user=Depends(current_active_user)) -> Tag:
+async def get_tag_record(id: PydanticObjectId, user=Depends(current_active_user)) -> ReadTag:
     tag = await Tag.get(id)
     return tag
 
 
-@router.get("/", response_description="Tag records retrieved")
-async def get_tags(user=Depends(current_active_user)) -> List[Tag]:
+@router.get("", response_description="Tag records retrieved")
+async def get_tags(user=Depends(current_active_user)) -> List[ReadTag]:
     tags = await Tag.find_all().to_list()
     return tags
 
 
 @router.put("/{id}", response_description="Tag record updated")
-async def update_tag_data(id: PydanticObjectId, req: Tag, user=Depends(current_active_user)) -> Tag:
+async def update_tag_data(id: PydanticObjectId, req: UpdateTag, user=Depends(current_active_user)) -> ReadTag:
     req = {k: v for k, v in req.dict().items() if v is not None}
     update_query = {"$set": {
         field: value for field, value in req.items()

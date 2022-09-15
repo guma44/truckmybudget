@@ -23,7 +23,22 @@ services:
       - db
     volumes:
       - ./backend:/opt/tmb:z
+      - ./files:/data/files:rw
     environment:
-      - TMB_BACKEND_DB_URL="mongodb://root:trackmybudget@db:27017"
+      - TMB_BACKEND_DB_URL=mongodb://root:trackmybudget@db:27017
+      - TMB_BACKEND_ALLOW_NEW_USERS=True
     ports:
       - "8000:8000"
+  frontend:
+    build:
+      context: "."
+      dockerfile: ./compose/frontend.Dockerfile
+    image: tmb_frontend
+    container_name: tmb_frontend
+    depends_on:
+      - db
+      - backend
+    environment:
+      - API_URL="niet"
+    ports:
+      - "3000:3000"

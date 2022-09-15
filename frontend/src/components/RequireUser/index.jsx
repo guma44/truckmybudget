@@ -18,17 +18,21 @@ const RequireUser = ({ allowedRoles }) => {
   });
 
   if (loading) {
+    console.log("loading")
     return "Loading..."
   }
 
   if ((cookies.logged_in || user)) {
+    console.log(user);
     return (<Outlet />)
   }
   else {
     if (cookies.logged_in && user) {
+      console.log("cookie and user")
       return <Navigate to='/' state={{ from: location }} replace />
     }
     else {
+      console.log("noting")
       return <Navigate to='/login' state={{ from: location }} replace />
     }
   }

@@ -25,6 +25,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import { visuallyHidden } from '@mui/utils';
 import { toast } from 'react-toastify';
+import RedoIcon from '@mui/icons-material/Redo';
 import { useConfirm } from 'material-ui-confirm';
 
 import { openExpenseDialog } from '../../redux/features/expenseDialogSlice';
@@ -34,7 +35,7 @@ import { openEditExpenseDialog } from '../../redux/features/editExpenseDialogSli
 import { openAddGroupDialog } from '../../redux/features/groupsDialogSlice';
 import { openAddTagDialog } from '../../redux/features/tagsDialogSlice';
 import { DownloadFile } from '../DownloadFile';
-import { Button, Chip } from '@mui/material';
+import { Button, Chip, Link } from '@mui/material';
 import { Stack } from '@mui/system';
 
 
@@ -340,7 +341,6 @@ export default function EnhancedTable() {
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  console.log(row);
                   const isItemSelected = isSelected(row.name);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -387,9 +387,9 @@ export default function EnhancedTable() {
                             style={{backgroundColor: tag.color}} />
                         }) : "")
                       }</TableCell>
-                      <TableCell align="left">{(
-                        row.invoice ? <DownloadFile path={row.invoice.path} filename={row.invoice.name}/> : ""
-                        )}
+                      <TableCell align="left">
+                        {row.invoice_url ? <Link target="_blank" href={row.invoice_url}><RedoIcon></RedoIcon></Link> : ""}
+                        {(row.invoice ? <DownloadFile path={`invoices/${row.invoice._id}/download`} filename={row.invoice.name}/> : "")}
                       </TableCell>
 
                       <TableCell>

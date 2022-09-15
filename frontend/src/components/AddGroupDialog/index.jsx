@@ -6,18 +6,17 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { closeAddGroupDialog } from '../../redux/features/groupsDialogSlice';
 import { useCreateGroupMutation } from '../../redux/api/groupsApi';
-import { InputAdornment } from '@material-ui/core';
-import { IconButton } from '@mui/material';
-import PaletteIcon from '@mui/icons-material/Palette';
+
+import { ColorPicker } from 'mui-color';
 
 
 export default function AddGroupDialog() {
   const [name, setName] = React.useState("");
-  const [color, setColor] = React.useState("");
+  const [color, setColor] = React.useState("black");
 
   const [ createGroup ] = useCreateGroupMutation();
   const dispatch = useDispatch();
@@ -25,8 +24,13 @@ export default function AddGroupDialog() {
   const handleClose = () => {
     dispatch(closeAddGroupDialog());
     setName("");
-    setColor(0);
+    setColor("");
   };
+
+  const handleSetColor = (color) => {
+    console.log(color);
+    setColor("#" + color);
+  }
 
   const handleAddGroup = async () => {
     const data = {
@@ -35,7 +39,7 @@ export default function AddGroupDialog() {
     };
     try {
       await createGroup(data).unwrap()
-      toast.success("Group created");
+      toast.success(`Group "${name}" created`);
     } catch (error) {
       toast.error(error.data.detail);
     }
@@ -66,25 +70,10 @@ export default function AddGroupDialog() {
               setName(event.target.value);
             }}
           />
-          <TextField
-            margin="dense"
-            id="color"
+          <ColorPicker
             value={color}
-            label="Color"
-            type="text"
-            fullWidth
-            variant="outlined"
-            required
-            onChange={(event) => {
-              setColor(event.target.value);
-            }}
-            InputProps={{
-              endAdornment: <InputAdornment position="end">
-                  <IconButton onClick={() => setColorPicker(true)}>
-                    <PaletteIcon color="inherit"></PaletteIcon>
-                  </IconButton>
-              </InputAdornment>
-            }}
+            deferred={false}
+            onChange={(event) => handleSetColor(event.hex)}
           />
         </DialogContent>
         <DialogActions>

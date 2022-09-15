@@ -26,6 +26,7 @@ export default function AddAccountDialog() {
     dispatch(closeAddAccountDialog());
     setName("");
     setAmount(0);
+    setType("");
   };
 
   const handleAddAccount = () => {
@@ -36,7 +37,7 @@ export default function AddAccountDialog() {
     };
     createAccount(data);
     setName("");
-    setAmount("");
+    setAmount(0);
     setType("");
     toast.success("Account created");
     dispatch(closeAddAccountDialog());

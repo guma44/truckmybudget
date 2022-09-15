@@ -2,12 +2,12 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { userApi } from './userApi';
 import { logout } from '../features/userSlice';
 
-const BASE_URL = "http://localhost:8000" // process.env.REACT_APP_SERVER_ENDPOINT;
+const BASE_URL = process.env.REACT_APP_API_ENDPOINT;
 
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}/auth/`,
+    baseUrl: `${BASE_URL}auth/`,
   }),
   endpoints: (builder) => ({
     loginUser: builder.mutation({

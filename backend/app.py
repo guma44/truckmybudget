@@ -27,6 +27,8 @@ from models.users import (
     current_active_user,
     fastapi_users,
 )
+
+from config.settings import settings
 from models.expenses import Expense
 from models.groups import Group
 from models.tags import Tag
@@ -34,7 +36,7 @@ from models.invoices import Invoice
 from models.accounts import Account
 
 
-origins = ["http://localhost:3000"]
+origins = [settings.ORIGIN]
 middleware = [
     Middleware(CORSMiddleware,
     allow_origins=origins,
@@ -70,11 +72,13 @@ app.include_router(
     prefix="/auth/jwt",
     tags=["auth"]
 )
-# app.include_router(
-#     fastapi_users.get_register_router(UserRead, UserCreate),
-#     prefix="/auth",
-#     tags=["auth"],
-# )
+
+if settings.ALLOW_NEW_USERS:
+    app.include_router(
+        fastapi_users.get_register_router(UserRead, UserCreate),
+        prefix="/auth",
+        tags=["auth"],
+    )
 # app.include_router(
 #     fastapi_users.get_reset_password_router(),
 #     prefix="/auth",

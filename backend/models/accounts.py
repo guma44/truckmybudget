@@ -1,21 +1,27 @@
-from typing import Optional, List
-import datetime
+from typing import Optional
 
 from pydantic import BaseModel
 from beanie import Document, Link
 
-from models.invoices import Invoice
-from models.groups import Group
-from models.tags import Tag
+from models.users import User
 
 
 class Account(Document):
     name: str
     amount: float
     account_type: str
+    user: Link[User]
 
     class Settings:
         name = "accounts"
+
+
+
+
+class CreateAccount(BaseModel):
+    name: str
+    amount: float
+    account_type: str
 
     class Config:
         schema_extra = {
@@ -27,10 +33,14 @@ class Account(Document):
         }
 
 
+class ReadAccount(CreateAccount):
+    ...
+
+
 class UpdateAccount(BaseModel):
     name: Optional[str]
     amount: Optional[float]
-    account_type: Optional[float]
+    account_type: Optional[str]
 
 
 class AmendAccount(BaseModel):

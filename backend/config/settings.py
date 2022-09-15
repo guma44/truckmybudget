@@ -1,9 +1,12 @@
-from pydantic import BaseSettings
+from pydantic import BaseSettings, DirectoryPath, MongoDsn, AnyHttpUrl
 
 class Settings(BaseSettings):
-    TMB_BACKEND_DB_URL: str
+    DB_URL: MongoDsn
+    ALLOW_NEW_USERS: bool = False
+    ORIGIN: AnyHttpUrl = "http://localhost:3000"
+    FILES_DIR: DirectoryPath = "/data/files"
 
-    # class Config:
-    #     prefix="TMB_BACKEND_"
+    class Config:
+        env_prefix = "TMB_BACKEND_"
 
 settings = Settings()

@@ -32,6 +32,7 @@ export default function FormDialog(props) {
   const [group, setGroup] = React.useState(initialExpense.group);
   const [tags, setTags] = React.useState(initialExpense.tags);
   const [description, setDescription] = React.useState(initialExpense.description);
+  const [invoiceUrl, setInvoiceUrl] = React.useState(initialExpense.invoice_url);
   const [invoice, setInvoice] = React.useState(initialExpense.invoice);
   const {data: preexistingTags, isTagsLoading} = useGetTagsQuery();
   const {data: preexistingGroups, isGroupsLoading} = useGetGroupsQuery();
@@ -67,6 +68,7 @@ export default function FormDialog(props) {
     setTags([]);
     setDescription("");
     setInvoice(null);
+    setInvoiceUrl("");
   };
 
   const handleUpdateExpense = () => {
@@ -80,6 +82,7 @@ export default function FormDialog(props) {
           tags: tags ? tags.map((item) => item._id) : null,
           group: group ? group._id : null,
           account: account._id,
+          invoice_url: invoiceUrl,
           invoice: invoice._id
         };
         updateExpense({id: expenseId, expense: data})
@@ -98,6 +101,7 @@ export default function FormDialog(props) {
               tags: tags ? tags.map((item) => item._id) : null,
               group: group ? group._id : null,
               account: account._id,
+              invoice_url: invoiceUrl,
               invoice: response._id
             };
             return updateExpense({id: expenseId, expense: data}).unwrap()
@@ -118,6 +122,7 @@ export default function FormDialog(props) {
         description: description,
         tags: tags ? tags.map((item) => item._id) : null,
         group: group ? group._id : null,
+        invoice_url: invoiceUrl,
         account: account._id
       };
       updateExpense({id: expenseId, expense: data}).unwrap()
@@ -135,6 +140,7 @@ export default function FormDialog(props) {
     setTags([]);
     setDescription("");
     setInvoice(null);
+    setInvoiceUrl("");
     dispatch(closeEditExpenseDialog());
     
   }
@@ -278,6 +284,18 @@ export default function FormDialog(props) {
             variant="outlined"
             onChange={(event) => {
               setDescription(event.target.value);
+            }}
+          />
+          <TextField
+            margin="dense"
+            id="invoiceUrl"
+            label="Invoice URL"
+            value={invoiceUrl}
+            type="url"
+            fullWidth
+            variant="outlined"
+            onChange={(event) => {
+              setInvoiceUrl(event.target.value);
             }}
           />
           <Stack>

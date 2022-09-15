@@ -1,6 +1,6 @@
 {
-  "expenses": {
-    "production": "",
+  "api": {
+    "production": "https://budowa.gumiennik.duckdns.org/api/",
     "test": "",
     "development": "",
     "local": "http://localhost:8000/"
