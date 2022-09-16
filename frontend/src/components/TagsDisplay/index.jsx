@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Box, Chip, IconButton, Typography } from '@mui/material';
+import { Box, Chip, Grid, IconButton, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { Stack } from '@mui/system';
 import { useConfirm } from 'material-ui-confirm';
@@ -47,26 +47,28 @@ export default function Tags() {
   return (
     <Box>
     <Typography variant="h6" mb={2}>Tags</Typography>
-    <Stack direction="row" spacing={1}>
+    <Grid
+          container
+          spacing={1}
+          justify="center">
       {tags.map((tag) => {
-        return <Chip
-          key={tag._id}
+        return <Grid key={tag._id} item><Chip
           label={tag.name}
           size="small"
           color="primary"
           onClick={() => dispatch(openEditTagDialog(tag))}
           onDelete={() => handleDeleteTag(tag)}
           style={{ backgroundColor: tag.color }}
-        />
+        /></Grid>
       })}
-      <Chip
+      <Grid item><Chip
         key="add-tag-chip"
         label={<AddIcon></AddIcon>}
         size="small"
         color="primary"
         onClick={handleCreateTag}
-      />
-    </Stack>
+      /></Grid>
+    </Grid>
     </Box>
   );
 }

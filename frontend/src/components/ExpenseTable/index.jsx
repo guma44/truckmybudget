@@ -28,10 +28,10 @@ import { visuallyHidden } from '@mui/utils';
 import { toast } from 'react-toastify';
 import { useConfirm } from 'material-ui-confirm';
 
-import { openExpenseDialog } from '../../redux/features/expenseDialogSlice';
 import { useGetExpensesQuery, useDeleteExpenseMutation } from '../../redux/api/expensesApi'
 import { useDownloadInvoiceQuery } from '../../redux/api/invoicesApi';
 import { openEditExpenseDialog } from '../../redux/features/editExpenseDialogSlice';
+import { openExpenseDialog } from '../../redux/features/expenseDialogSlice';
 import { openAddGroupDialog } from '../../redux/features/groupsDialogSlice';
 import { openAddTagDialog } from '../../redux/features/tagsDialogSlice';
 import { DownloadFile } from '../DownloadFile';
@@ -233,7 +233,7 @@ export default function EnhancedTable() {
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const dense = true
-  const [rowsPerPage, setRowsPerPage] = React.useState(2);
+  const [rowsPerPage, setRowsPerPage] = React.useState(30);
   const {
     data: rows,
     isLoading
@@ -386,6 +386,7 @@ export default function EnhancedTable() {
                             label={tag.name}
                             size="small"
                             color="primary"
+                            sx={{margin: 0.2}}
                             style={{backgroundColor: tag.color}} />
                         }) : "")
                       }</TableCell>

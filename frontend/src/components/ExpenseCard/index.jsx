@@ -75,34 +75,45 @@ export default function ExpenseCard({ row }) {
   };
 
   return (
-    <Card variant="outlined" sx={{ maxWidth: 345 }}>
+        <Card variant="outlined" sx={{
+          maxWidth: 345,
+          border: "1px solid #525252",
+          marginTop: 1,
+          marginBottom: 1,
+          padding: 1}}>
+      <Box disableSpacing sx={{padding: 0, margin: 0}}>
          <Chip
             label={row.group ? row.group.name : "Other"}
             size="small"
             color="primary"
-            style={{ backgroundColor: row.group ? row.group.color : "black", padding: 1, margin: 10 }}
+            style={{
+              backgroundColor: row.group ? row.group.color : "black",
+              padding: 5,
+              marginBottom: 5,
+              borderRadius: 4,
+              marginTop: 0,
+              marginBottom: 0 }}
           />
-        <CardHeader
-        sx={{paddingBottom: "0px"}}
-        action={
-          <Box>
-            <IconButton aria-label="edit" onClick={(event) => handleEditExpense(event, row)}>
+        {row.invoice_url ? <IconButton><Link target="_blank" href={row.invoice_url}><RedoIcon></RedoIcon></Link> </IconButton>: <IconButton disabled><RedoIcon/></IconButton>}
+        {(row.invoice ? <DownloadFile path={`invoices/${row.invoice._id}/download`} filename={row.invoice.name} /> : <IconButton disabled><DownloadIcon/></IconButton>)}
+        <IconButton aria-label="edit" onClick={(event) => handleEditExpense(event, row)}>
               <EditIcon />
             </IconButton>
             <IconButton aria-label="delete" onClick={(event) => handleDeleteExpense(event, row)}>
               <DeleteIcon />
             </IconButton>
-          </Box>
-        }
+      </Box>
+        <CardHeader
+        sx={{padding: 0.0}}
         titleTypographyProps={{overflowWrap: "break-word", maxWidth: "190px"}}
         title={`${row.name}`}
         subheader={`${row.date}`}
       />
-      <CardContent sx={{paddingBottom: "0"}}>
+      <CardContent sx={{padding: 0}}>
         <Typography pb="15px" variant="h6" color="text.secondary">
           {formatMoney(row.price)} | {row.account.name}
         </Typography>
-        <Typography sx={{paddingBottom: "20px"}} variant="body2" color="text.secondary">
+        <Typography sx={{paddingBottom: 0}} variant="body2" color="text.secondary">
           {row.description}
         </Typography>
         <Box mt={2}>
@@ -118,10 +129,7 @@ export default function ExpenseCard({ row }) {
           }
         </Box>
       </CardContent>
-      <CardActions disableSpacing pt="1px">
-        {row.invoice_url ? <IconButton><Link target="_blank" href={row.invoice_url}><RedoIcon></RedoIcon></Link> </IconButton>: <IconButton disabled><RedoIcon/></IconButton>}
-        {(row.invoice ? <DownloadFile path={`invoices/${row.invoice._id}/download`} filename={row.invoice.name} /> : <IconButton disabled><DownloadIcon/></IconButton>)}
-      </CardActions>
+
     </Card>
   );
 }

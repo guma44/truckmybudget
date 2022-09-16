@@ -13,7 +13,7 @@ import { openAddAccountDialog } from '../../redux/features/accountsDialogSlice';
 
 const AccountCard = ({ item }) => {
   return (
-  <Card sx={{ minWidth: 200 }} variant="outlined">
+  <Card sx={{ minWidth: 200, border: "1px solid black"}} variant="outlined">
     <CardContent>
       <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
         {item.name}
@@ -29,7 +29,7 @@ export default function Accounts() {
   const dispatch = useDispatch();
   const { data: accounts, isGroupsLoading } = useGetAccountsQuery();
   return (
-    <Stack mb={5} direction={isMobile ? "column" : "row"}>
+    <Stack sx={{margin: 2}} spacing={2} direction={isMobile ? "column" : "row"}>
       {accounts && accounts.map((item) => {
         return (<AccountCard key={ item._id } item={item}/>)
       })}

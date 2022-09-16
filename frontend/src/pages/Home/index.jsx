@@ -10,8 +10,14 @@ import AddAccountDialog from '../../components/AddAccountDialog';
 import AddGroupDialog from '../../components/AddGroupDialog';
 import AddTagDialog from '../../components/AddTagDialog';
 import ExpensesGrid from '../../components/ExpensesGrid';
+import AddIcon from '@mui/icons-material/Add';
 import ExpenseTable from '../../components/ExpenseTable';
+import { openExpenseDialog } from '../../redux/features/expenseDialogSlice';
+import { openAddGroupDialog } from '../../redux/features/groupsDialogSlice';
+import { openAddTagDialog } from '../../redux/features/tagsDialogSlice';
+
 import { isMobile } from 'react-device-detect';
+import { Fab } from '@mui/material';
 
 const StyledPaper = styled(Paper)`
   width: ${isMobile ? "100%" : "90%"};
@@ -33,16 +39,64 @@ const HomeView = () => {
   const isAddGroupDialogOpen = useSelector((state) => state.groupDialog.isOpen);
   const isAddTagDialogOpen = useSelector((state) => state.tagDialog.isOpen);
 
+  const openAddExpenseDialogHandler = () => {
+    dispatch(openExpenseDialog());
+  }
+  const openAddGroupDialogHandler = () => {
+    dispatch(openAddGroupDialog());
+  }
+  const openAddTagDialogHandler = () => {
+    dispatch(openAddTagDialog());
+  }
+
   return (
     <StyledPaper elevation={0}>
       <CreateExpenseDialog isOpen={isCreateDialogOpen} />
-      {isEditDialogOpen && expenseToEdit && <EditExpenseDialog isOpen={isEditDialogOpen} initialExpense={expenseToEdit}/>}
+      {isEditDialogOpen && expenseToEdit && <EditExpenseDialog isOpen={isEditDialogOpen} initialExpense={expenseToEdit} />}
       {isAddAccountDialogOpen && <AddAccountDialog />}
       {isAddGroupDialogOpen && <AddGroupDialog />}
       {isAddTagDialogOpen && <AddTagDialog />}
       <Accounts></Accounts>
       {isMobile ? <ExpensesGrid></ExpensesGrid> : <ExpenseTable></ExpenseTable>}
-      
+      {isMobile && <Fab
+        sx={
+          {
+            margin: 0,
+            top: 'auto',
+            right: 20,
+            bottom: 20,
+            left: 'auto',
+            position: 'fixed',
+          }
+        }
+        onClick={openAddExpenseDialogHandler}
+        color="primary"><AddIcon></AddIcon></Fab>}
+      {isMobile && <Fab
+        sx={
+          {
+            margin: 0,
+            top: 'auto',
+            right: 20,
+            bottom: 80,
+            left: 'auto',
+            position: 'fixed',
+          }
+        }
+        onClick={openAddGroupDialogHandler}
+        color="secondary">G</Fab>}
+      {isMobile && <Fab
+        sx={
+          {
+            margin: 0,
+            top: 'auto',
+            right: 20,
+            bottom: 140,
+            left: 'auto',
+            position: 'fixed',
+          }
+        }
+        onClick={openAddTagDialogHandler}
+        color="secondary">T</Fab>}
     </StyledPaper>
   );
 };

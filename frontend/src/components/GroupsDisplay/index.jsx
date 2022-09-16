@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Box, Chip, IconButton, Typography } from '@mui/material';
+import { Box, Chip, Grid, IconButton, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { Stack } from '@mui/system';
 import { useConfirm } from 'material-ui-confirm';
 import { toast } from 'react-toastify';
-
+import { isMobile } from 'react-device-detect';
 import { useGetGroupsQuery, useDeleteGroupMutation } from '../../redux/api/groupsApi';
 import { openAddGroupDialog } from '../../redux/features/groupsDialogSlice';
 import { openEditGroupDialog } from '../../redux/features/editGroupDialogSlice';
@@ -47,26 +47,30 @@ export default function Groups() {
   return (
     <Box>
     <Typography variant="h6" mb={2}>Groups</Typography>
-    <Stack direction="row" spacing={1}>
+    <Grid
+      container
+      spacing={1}
+      justify="center">
       {groups.map((group) => {
-        return <Chip
-          key={group._id}
+        return <Grid key={group._id} item><Chip
           label={group.name}
           size="small"
           color="primary"
           onClick={() => dispatch(openEditGroupDialog(group))}
           onDelete={() => handleDeleteGroup(group)}
           style={{ backgroundColor: group.color }}
-        />
+        /></Grid>
       })}
-      <Chip
-        key="add-group-chip"
-        label={<AddIcon></AddIcon>}
-        size="small"
-        color="primary"
-        onClick={handleCreateGroup}
-      />
-    </Stack>
+      <Grid  item>
+        <Chip
+          key="add-group-chip"
+          label={<AddIcon></AddIcon>}
+          size="small"
+          color="primary"
+          onClick={handleCreateGroup}
+        />
+      </Grid>
+    </Grid>
     </Box>
   );
 }
