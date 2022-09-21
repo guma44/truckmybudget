@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Fragment } from "react";
 import { useDownloadFile } from "../../utils/hooks/useDownloadFile";
 import { useCookies } from 'react-cookie';
 
@@ -38,9 +39,9 @@ export const DownloadFile = (props) => {
   });
 
   return (
-    <dev>
+    <Fragment>
         <a href={url} download={name} className="hidden" ref={ref} />
         <IconButton onClick={download}><DownloadIcon/></IconButton>
-    </dev>
+    </Fragment>
   );
 };

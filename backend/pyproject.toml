@@ -8,14 +8,18 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.8"
 beanie = "^1.11.9"
-fastapi = "fastapi-users"
-fastapi-users-db-beanie = "motor"
-multidict = "PyJWT"
-python-multipart = "uvicorn"
+fastapi = "^0.85"
+fastapi-users = "^10.1.5"
+fastapi-users-db-beanie = "^1.0.0"
+motor = "^3.0.0"
+multidict = "^6.0.2"
+PyJWT = "2.4.0"
+python-multipart = "^0.0.5"
 uvicorn = "^0.18.3"
 
 [tool.poetry.group.dev.dependencies]
-black = "pytest"
+# black = ""
+# pytest = ""
 isort = "^5.10.1"
 
 [build-system]

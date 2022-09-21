@@ -3,7 +3,7 @@ version: '3.1'
 services:
   db:
     image: mongo:4.4
-    container_name: tmb_mongodb_dev
+    container_name: tmb_mongodb
     restart: unless-stopped
     volumes:
       - ./db:/data/db
@@ -13,32 +13,23 @@ services:
       MONGO_INITDB_DATABASE: trackmybudget
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: trackmybudget
-  backend:
+  tmb:
     build:
       context: "."
-      dockerfile: ./compose/dev/backend.Dockerfile
-    image: tmb_backend
-    container_name: tmb_backend_dev
+      dockerfile: ./compose/prod/Dockerfile
+    image: tmb
+    restart: unless-stopped
+    container_name: tmb_app
     depends_on:
       - db
     volumes:
-      - ./backend:/opt/backend:rw
       - ./files:/data/files:rw
     environment:
       - TMB_BACKEND_DB_URL=mongodb://root:trackmybudget@db:27017
       - TMB_BACKEND_ALLOW_NEW_USERS=True
+      - TMB_BACKEND_ROOT_PATH=/api
+      - TMB_BACKEND_ORIGIN=http://localhost:8080
+      - API_ENTRYPOINT=http://localhost:8080/api/
     ports:
-      - "8000:8000"
-  frontend:
-    build:
-      context: "."
-      dockerfile: ./compose/dev/frontend.Dockerfile
-    image: tmb_frontend
-    container_name: tmb_frontend_dev
-    volumes:
-      - ./frontend:/opt/frontend:rw
-    depends_on:
-      - db
-      - backend
-    ports:
-      - "3000:3000"
+      - "9001:9001"
+      - "8080:80"

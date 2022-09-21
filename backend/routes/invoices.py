@@ -47,7 +47,7 @@ async def get_invoice_record(id: PydanticObjectId, user=Depends(current_active_u
     invoice = await Invoice.get(id)
     return invoice
 
-@router.get("/{id}/download/")
+@router.get("/{id}/download")
 async def download_invoice(id: PydanticObjectId, user=Depends(current_active_user)):
     invoice = await Invoice.get(id)
     file_extension = os.path.splitext(invoice.name)[-1]

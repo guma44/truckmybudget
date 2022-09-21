@@ -6,7 +6,6 @@ export const accountsApi = TDBApi.injectEndpoints({
   endpoints: (builder) => ({
     createAccount: builder.mutation({
       query(formData) {
-        console.log(formData);
         return {
           url: '/accounts',
           method: 'POST',

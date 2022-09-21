@@ -1,7 +1,9 @@
 #!/bin/bash
 
-cd /app
+cd /opt/frontend
+
 echo "REACT_APP_API_ENDPOINT=${API_ENTRYPOINT}" > .env.production
 npm run build --prod
-npx serve build
+rm -rf /var/www/html && mv build /var/www/html
 
+supervisord -c /etc/supervisord.conf

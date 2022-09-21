@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import styled from 'styled-components';
@@ -62,7 +62,7 @@ export default function LoginDialog() {
   }
 
   return (
-    <div>
+    <Fragment>
       <Box width="50%" margin="auto" mt={10}>
           <TextField
             autoFocus
@@ -96,6 +96,6 @@ export default function LoginDialog() {
         </Stack>
 
         </Box>
-    </div>
+    </Fragment>
   );
 }

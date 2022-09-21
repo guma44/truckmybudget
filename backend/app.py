@@ -1,9 +1,6 @@
 import os
 
-from fastapi import FastAPI, Body, HTTPException, status, File, UploadFile
-from fastapi.responses import Response, JSONResponse
-from fastapi.encoders import jsonable_encoder
-from typing import Optional, List
+from fastapi import FastAPI
 import uuid
 
 from beanie import init_beanie
@@ -44,7 +41,7 @@ middleware = [
     allow_methods=["*"],
     allow_headers=["*"],)
 ]
-app = FastAPI(middleware=middleware)
+app = FastAPI(middleware=middleware, root_path=settings.ROOT_PATH)
 
 class AuthStaticFiles(StaticFiles):
     def __init__(self, *args, **kwargs) -> None:
