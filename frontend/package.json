@@ -14,6 +14,7 @@
     "@reduxjs/toolkit": "^1.8.0",
     "axios": "^0.27.2",
     "dayjs": "^1.11.5",
+    "material-react-table": "^1.1.0",
     "material-ui-confirm": "^3.0.5",
     "mui-color": "^2.0.0-beta.2",
     "prop-types": "^15.8.1",

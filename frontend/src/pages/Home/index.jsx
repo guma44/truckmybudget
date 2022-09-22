@@ -12,6 +12,7 @@ import AddTagDialog from '../../components/AddTagDialog';
 import ExpensesGrid from '../../components/ExpensesGrid';
 import AddIcon from '@mui/icons-material/Add';
 import ExpenseTable from '../../components/ExpenseTable';
+import NewExpenseTable from '../../components/ExpenseTable';
 import { openExpenseDialog } from '../../redux/features/expenseDialogSlice';
 import { openAddGroupDialog } from '../../redux/features/groupsDialogSlice';
 import { openAddTagDialog } from '../../redux/features/tagsDialogSlice';
