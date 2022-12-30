@@ -10,6 +10,7 @@ import RequireUser from './components/RequireUser';
 import NotFound from './pages/NotFound';
 import HomeContainer from './pages/Home';
 import UtilsContainer from './pages/Utils';
+import StatsContainer from './pages/Stats';
 import LoginContainer from './pages/Login';
 
 import * as Paths from './paths';
@@ -52,6 +53,9 @@ const App = () => {
             </Route>
             <Route element={<RequireUser allowedRoles={['user', 'admin']} />}>
               <Route exact path={Paths.UTILS} element={<UtilsContainer/>} />
+            </Route>
+            <Route element={<RequireUser allowedRoles={['user', 'admin']} />}>
+              <Route exact path={Paths.STATS} element={<StatsContainer/>} />
             </Route>
             <Route exact path={Paths.LOGIN} element={<LoginContainer/>} />
             <Route path="*" element={<NotFound/>} />

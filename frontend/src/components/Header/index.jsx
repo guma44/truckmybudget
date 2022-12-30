@@ -117,6 +117,13 @@ function DrawerAppBar(props) {
             >
               Utils
             </Button>
+            <Button
+              key="stats"
+              sx={{ color: '#fff' }}
+              onClick={() => navigate("/stats", { replace: true })}
+            >
+              Stats
+            </Button>
           </Box>}
           {user && <Box sx={{ flexGrow: 0, marginLeft: "auto"}}>
             <Tooltip title="Open settings">
