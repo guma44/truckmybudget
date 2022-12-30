@@ -130,7 +130,8 @@ const columns = [
   {
     accessorKey: "description",
     enableGrouping: false,
-    header: "Description"
+    header: "Description",
+    Cell: ({cell}) => <Box sx={{width: "100px", overflowWrap: "break-word"}}>{cell.getValue()}</Box>
   },
   {
     id: "tags",
@@ -263,7 +264,15 @@ export default function EnhancedTable() {
           enableStickyHeader={true}
           enableFullScreenToggle={false}
           enableDensityToggle={false}
-          initialState={{ density: 'compact' }}
+          defaultColumn={{
+            minSize: 20, //allow columns to get smaller than default
+            maxSize: 100, //allow columns to get larger than default
+            size: 50, //make columns wider by default
+          }}
+          muiTablePaginationProps={{
+            rowsPerPageOptions: [20, 50, 100, 500, 1000]
+          }}
+          initialState={{ density: 'compact', pagination: {pageSize: 20}}}
           renderRowActions={({ row }) => (
             <div>
               <IconButton onClick={(event) => handleEditExpense(event, row.original)}><EditIcon /></IconButton>

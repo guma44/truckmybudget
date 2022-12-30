@@ -6,18 +6,23 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import moment from 'moment';
+
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
+import { openAddGroupDialog } from '../../redux/features/groupsDialogSlice';
+import { openAddTagDialog } from '../../redux/features/tagsDialogSlice';
 import { useGetTagsQuery } from '../../redux/api/tagsApi';
 import { useGetGroupsQuery } from '../../redux/api/groupsApi';
 import { useGetAccountsQuery } from '../../redux/api/accountsApi';
 import { useUpdateExpenseMutation } from '../../redux/api/expensesApi';
 import { useCreateInvoiceMutation } from '../../redux/api/invoicesApi';
 import { Chip, InputAdornment } from '@material-ui/core';
-import { Autocomplete, Box, Stack, Typography } from '@mui/material';
+import { Autocomplete, Box, Stack, Typography, IconButton } from '@mui/material';
 import { closeEditExpenseDialog } from '../../redux/features/editExpenseDialogSlice';
 
 
@@ -41,6 +46,14 @@ export default function FormDialog(props) {
   const [ createInvoice ] = useCreateInvoiceMutation();
   const dispatch = useDispatch();
 
+
+  const openAddGroupDialogHandler = () => {
+    dispatch(openAddGroupDialog());
+  }
+
+  const openAddTagDialogHandler = () => {
+    dispatch(openAddTagDialog());
+  }
 
 
   const onTagsChange = (event, values) => {
@@ -230,8 +243,13 @@ export default function FormDialog(props) {
               value={date}
               inputFormat="YYYY-MM-DD"
               onChange={(event) => {
-                const d = event.toISOString().split('T')[0]
-                setDate(d);
+                try {
+                  const d = moment(event.toISOString()).utcOffset(5, false).format("YYYY-MM-DD")
+                  setDate(d);
+                } catch (e) {
+                  console.log(e);
+                }
+                
               }}
               renderInput={(params) => <TextField margin="dense" required {...params} />}
             />
@@ -243,6 +261,7 @@ export default function FormDialog(props) {
             value={group}
             isOptionEqualToValue={(option, value) => option._id === value._id}
             renderInput={params => (
+              <Stack direction="row">
               <TextField
                 {...params}
                 variant="standard"
@@ -251,6 +270,10 @@ export default function FormDialog(props) {
                 margin="dense"
                 fullWidth
               />
+              <IconButton sx={{marginTop: 2.5}}>
+                <AddCircleOutlineIcon onClick={() => openAddGroupDialogHandler()}/>
+              </IconButton>
+              </Stack>
             )}
           />
           <Autocomplete
@@ -264,6 +287,7 @@ export default function FormDialog(props) {
               value.map((option, index) => getTagDisplay(option, index, getTagProps))
             }
             renderInput={params => (
+              <Stack direction="row">
               <TextField
                 {...params}
                 variant="standard"
@@ -272,12 +296,16 @@ export default function FormDialog(props) {
                 margin="dense"
                 fullWidth
               />
+              <IconButton sx={{marginTop: 2.5}}>
+                <AddCircleOutlineIcon onClick={() => openAddTagDialogHandler()}/>
+              </IconButton>
+              </Stack>
             )}
           />
           <TextField
             margin="dense"
             id="description"
-            label="Descripion"
+            label="Description"
             value={description}
             type="text"
             fullWidth
