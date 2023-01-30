@@ -22,6 +22,8 @@ class Expense(Document):
     group: Optional[Link[Group]]
     account: Link[Account]
     user: Link[User]
+    include_in_total: Optional[bool] = True
+    forecast: Optional[bool] = False
 
     class Settings:
         name = "expenses"
@@ -41,6 +43,8 @@ class CreateExpense(BaseModel):
     tags: List[Link[Tag]] = []
     group: Optional[Link[Group]]
     account: Link[Account]
+    include_in_total: Optional[bool] = True
+    forecast: Optional[bool] = False
     class Config:
         schema_extra = {
             "example": {
@@ -50,7 +54,9 @@ class CreateExpense(BaseModel):
                 "date": "2022-02-04",
                 "tags": ["TAG_ID"],
                 "group": "GROUP_ID",
-                "account": "ACCOUNT_ID"
+                "account": "ACCOUNT_ID",
+                "include_in_total": True,
+                "forecast": False
             }
         }
 
@@ -67,3 +73,5 @@ class UpdateExpense(BaseModel):
     tags: Optional[List[Link[Tag]]]
     group: Optional[Link[Group]]
     account: Optional[Link[Account]]
+    include_in_total: Optional[bool] = True
+    forecast: Optional[bool] = False

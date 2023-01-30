@@ -17,7 +17,9 @@ router = APIRouter()
 @router.post("", response_description="Expense added to the database")
 async def add_expense(expense: CreateExpense, user=Depends(current_active_user)) -> ReadExpense:
     account = await expense.account.fetch()
-    new_account_amount = account.amount - expense.price
+    new_account_amount = account.amount
+    if not expense.forecast:
+        new_account_amount = account.amount - expense.price
     if new_account_amount < 0:
         raise HTTPException(
             status_code=400,
@@ -57,19 +59,43 @@ async def update_expense_data(id: PydanticObjectId, req: UpdateExpense, user=Dep
             detail="Expense record not found!"
         )
     account = await expense.account.fetch()
+    forecast = expense.forecast
     new_account_amount = None
-    if "price" in req:
-        if req["price"] > expense.price:
-            new_account_amount = account.amount - (req["price"] - expense.price)
-        elif req["price"] < expense.price:
-            new_account_amount = account.amount + (expense.price - req["price"])
-        else:
-            new_account_amount = account.amount  # no change in account amount
+
+    # Change from forecast = false to forecast = true
+    # price is included already in the account so we need to give it back
+    if req["forecast"] > forecast:
+        print(f"Going from {forecast} to {req['forecast']}")
+        new_account_amount = account.amount + expense.price
         if new_account_amount < 0:
             raise HTTPException(
                 status_code=400,
                 detail="Not enough money on account"
             )
+    # Change from forecast = true to forecast = false
+    # price not included yet in the account so we need to deduce it
+    elif req["forecast"] < forecast:
+        print(f"Going from {forecast} to {req['forecast']}")
+        new_account_amount = account.amount - req["price"]
+        if new_account_amount < 0:
+            raise HTTPException(
+                status_code=400,
+                detail="Not enough money on account"
+            )
+    elif not forecast:
+        print("Not changing forecast - it is true")
+        if "price" in req:
+            if req["price"] > expense.price:
+                new_account_amount = account.amount - (req["price"] - expense.price)
+            elif req["price"] < expense.price:
+                new_account_amount = account.amount + (expense.price - req["price"])
+            else:
+                new_account_amount = account.amount  # no change in account amount
+            if new_account_amount < 0:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Not enough money on account"
+                )
     await expense.update(update_query)
     if new_account_amount is not None:
         await account.update({"$set": {"amount": new_account_amount}})
@@ -82,7 +108,8 @@ async def delete_expense_data(id: PydanticObjectId, user=Depends(current_active_
     if not record:
         raise HTTPException(status_code=404, detail="Expense record not found!")
     account = await record.account.fetch()
-    new_account_amount = account.amount + record.price
     await record.delete()
-    await account.update({"$set": {"amount": new_account_amount}})
+    if not record.forecast:
+        new_account_amount = account.amount + record.price
+        await account.update({"$set": {"amount": new_account_amount}})
     return {"message": "Record deleted successfully"}

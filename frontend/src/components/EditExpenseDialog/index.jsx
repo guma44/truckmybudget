@@ -7,6 +7,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import moment from 'moment';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -39,6 +41,8 @@ export default function FormDialog(props) {
   const [description, setDescription] = React.useState(initialExpense.description);
   const [invoiceUrl, setInvoiceUrl] = React.useState(initialExpense.invoice_url);
   const [invoice, setInvoice] = React.useState(initialExpense.invoice);
+  const [include_in_total, setIncludeInTotal] = React.useState(initialExpense.include_in_total);
+  const [forecast, setForecast] = React.useState(initialExpense.forecast);
   const {data: preexistingTags, isTagsLoading} = useGetTagsQuery();
   const {data: preexistingGroups, isGroupsLoading} = useGetGroupsQuery();
   const {data: preexistingAccounts, isAccountsLoading} = useGetAccountsQuery();
@@ -82,6 +86,8 @@ export default function FormDialog(props) {
     setDescription("");
     setInvoice(null);
     setInvoiceUrl(null);
+    setIncludeInTotal(true);
+    setForecast(false);
   };
 
   const handleUpdateExpense = () => {
@@ -96,7 +102,9 @@ export default function FormDialog(props) {
           group: group ? group._id : null,
           account: account._id,
           invoice_url: invoiceUrl,
-          invoice: invoice._id
+          invoice: invoice._id,
+          include_in_total: include_in_total,
+          forecast: forecast
         };
         updateExpense({id: expenseId, expense: data})
       }
@@ -115,7 +123,9 @@ export default function FormDialog(props) {
               group: group ? group._id : null,
               account: account._id,
               invoice_url: invoiceUrl,
-              invoice: response._id
+              invoice: response._id,
+              include_in_total: include_in_total,
+              forecast: forecast
             };
             return updateExpense({id: expenseId, expense: data}).unwrap()
           })
@@ -136,7 +146,9 @@ export default function FormDialog(props) {
         tags: tags ? tags.map((item) => item._id) : null,
         group: group ? group._id : null,
         invoice_url: invoiceUrl,
-        account: account._id
+        account: account._id,
+        include_in_total: include_in_total,
+        forecast: forecast
       };
       updateExpense({id: expenseId, expense: data}).unwrap()
         .then(response => {
@@ -154,6 +166,8 @@ export default function FormDialog(props) {
     setDescription("");
     setInvoice(null);
     setInvoiceUrl(null);
+    setIncludeInTotal(true);
+    setForecast(false);
     dispatch(closeEditExpenseDialog());
     
   }
@@ -335,6 +349,10 @@ export default function FormDialog(props) {
           <Chip label={invoice ? invoice.name : "No file selected"} style={{margin: 5}}/>
           </Stack>
         </Stack>
+        <Box mt={1}>
+          <FormControlLabel control={<Checkbox onChange={(event) => {setIncludeInTotal(event.target.checked)}} checked={include_in_total}/>} label="Include in total" />
+          <FormControlLabel control={<Checkbox onChange={(event) => {setForecast(event.target.checked)}} checked={forecast}/>} label="Forecast" />
+        </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} variant="contained">Cancel</Button>

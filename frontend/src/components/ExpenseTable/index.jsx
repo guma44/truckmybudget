@@ -21,6 +21,8 @@ import Switch from '@mui/material/Switch';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
+import FunctionsIcon from '@mui/icons-material/Functions';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import LaunchIcon from '@mui/icons-material/Launch';
@@ -73,7 +75,12 @@ function stableSort(array, comparator) {
 }
 
 const calculateTotalPrice = (rows) => {
-  const total = rows.reduce((partialSum, row) => partialSum + row.price, 0);
+  const total = rows.reduce((partialSum, row) => (row.include_in_total && !row.forecast) ? partialSum + row.price : partialSum, 0);
+  return total
+}
+
+const calculateTotalForecastPrice = (rows) => {
+  const total = rows.reduce((partialSum, row) =>  (row.forecast && row.include_in_total) ? partialSum + row.price : partialSum, 0);
   return total
 }
 
@@ -155,20 +162,38 @@ const columns = [
     id: "invoice",
     enableGrouping: false,
     accessorFn: (row) => row.invoice ? row.invoice.name : "",
-    header: "Invoice",
+    header: "Info",
     Cell: ({ row }) => {
       return (
-        <Box>
-          {row.original.invoice_url ? <Link target="_blank" href={row.original.invoice_url}><LaunchIcon ></LaunchIcon></Link> : ""}
-          {(row.original.invoice ? <DownloadFile path={`invoices/${row.original.invoice._id}/download`} filename={row.original.invoice.name} /> : "")}
-        </Box>
+        <Stack direction="row" spacing={1}>
+          <Tooltip title={row.original.include_in_total ? "Included in total sum" : "Not included in total sum"}>
+            <Box>
+              <FunctionsIcon color={row.original.include_in_total ? "success" : "error"}></FunctionsIcon>
+            </Box>
+          </Tooltip>
+          <Tooltip title={row.original.forecast ? "Forecast" : "Real value"}>
+            <Box>
+              <QueryStatsIcon color={!row.original.forecast ? "secondary" : "success"}></QueryStatsIcon>
+            </Box>
+          </Tooltip>
+          <Tooltip title="Open invoice" placement='bottom'>
+            <Box>
+              {row.original.invoice_url ? <Link target="_blank" href={row.original.invoice_url}><LaunchIcon ></LaunchIcon></Link> : ""}
+            </Box>
+            </Tooltip>
+            <Tooltip title="Download invoice">
+            <Box>
+            {(row.original.invoice ? <DownloadFile path={`invoices/${row.original.invoice._id}/download`} filename={row.original.invoice.name} /> : "")}
+              </Box>
+            </Tooltip>
+        </Stack>
       )
     },
   },
 ];
 
 const EnhancedTableToolbar = (props) => {
-  const { numSelected, totalPrice } = props;
+  const { numSelected, totalPrice, forecastPrice } = props;
   const dispatch = useDispatch();
 
   const openAddExpenseDialogHandler = () => {
@@ -208,7 +233,12 @@ const EnhancedTableToolbar = (props) => {
           </Button>
         </Tooltip>
       </Stack>
-      <Typography variant='h5'>{formatMoney(totalPrice)}</Typography>
+      <Stack direction="row" spacing={2}>
+        <Typography variant='h5'>{formatMoney(totalPrice)}</Typography>
+        <Typography variant='h5'>|</Typography>
+        <Typography variant='h5' color="secondary">{formatMoney(forecastPrice)}</Typography>
+      </Stack>
+
     </Toolbar>
   );
 };
@@ -252,7 +282,7 @@ export default function EnhancedTable() {
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={0} totalPrice={calculateTotalPrice(rows)} />
+        <EnhancedTableToolbar numSelected={0} totalPrice={calculateTotalPrice(rows)} forecastPrice={calculateTotalForecastPrice(rows)}/>
         <MaterialReactTable
           columns={columns}
           data={rows}

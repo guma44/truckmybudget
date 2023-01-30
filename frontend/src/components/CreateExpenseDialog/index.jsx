@@ -6,6 +6,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -26,6 +28,7 @@ import { Chip, InputAdornment } from '@material-ui/core';
 import { Autocomplete, Box, IconButton, Stack, Typography } from '@mui/material';
 
 
+
 export default function FormDialog(props) {
   const {
     date: initialDate,
@@ -37,6 +40,8 @@ export default function FormDialog(props) {
     description: initialDescription,
     invoice: initialInvoice,
     invoice_url: initialInvoiceUrl,
+    include_in_total: initialIncludeInTotal,
+    forecast: initialForecast,
     isOpen
   } = props
   const [date, setDate] = React.useState(initialDate || null);
@@ -48,6 +53,8 @@ export default function FormDialog(props) {
   const [invoiceUrl, setInvoiceUrl] = React.useState(initialInvoiceUrl || null);
   const [description, setDescription] = React.useState(initialDescription || "");
   const [invoice, setInvoice] = React.useState(initialInvoice || null);
+  const [include_in_total, setIncludeInTotal] = React.useState(initialIncludeInTotal || true);
+  const [forecast, setForecast] = React.useState(initialForecast || false);
   const {data: preexistingTags, isTagsLoading} = useGetTagsQuery();
   const {data: preexistingGroups, isGroupsLoading} = useGetGroupsQuery();
   const {data: preexistingAccounts, isAccountsLoading} = useGetAccountsQuery();
@@ -89,6 +96,8 @@ export default function FormDialog(props) {
     setDescription("");
     setInvoice(null);
     setInvoiceUrl(null);
+    setIncludeInTotal(true);
+    setForecast(false);
   };
 
   const handleAddExpense = () => {
@@ -106,7 +115,9 @@ export default function FormDialog(props) {
             group: group ? group._id : null,
             account: account._id,
             invoice: response._id,
-            invoice_url: invoiceUrl
+            invoice_url: invoiceUrl,
+            include_in_total: include_in_total,
+            forecast: forecast
           };
           return createExpense(data).unwrap();
         })
@@ -127,7 +138,9 @@ export default function FormDialog(props) {
         tags: tags ? tags.map((item) => item._id) : null,
         group: group ? group._id : null,
         account: account._id,
-        invoice_url: invoiceUrl
+        invoice_url: invoiceUrl,
+        include_in_total: include_in_total,
+        forecast: forecast
       };
       createExpense(data).unwrap()
         .then((response) => {
@@ -303,7 +316,7 @@ export default function FormDialog(props) {
             }}
           />
           <Stack>
-          <Stack direction="row">
+          <Stack direction="row" mt={1}>
           <Button variant="contained" component="label">
             Upload Invoice
             <input hidden accept="image/*" multiple type="file" onChange={onInvoiceChange}/>
@@ -311,6 +324,10 @@ export default function FormDialog(props) {
           <Chip label={invoice ? invoice.name : "No file selected"} style={{margin: 5}}/>
           </Stack>
         </Stack>
+        <Box mt={1}>
+          <FormControlLabel control={<Checkbox onChange={(event) => {setIncludeInTotal(event.target.checked)}} checked={include_in_total}/>} label="Include in total" />
+          <FormControlLabel control={<Checkbox onChange={(event) => {setForecast(event.target.checked)}} checked={forecast}/>} label="Forecast" />
+        </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} variant="contained">Cancel</Button>
